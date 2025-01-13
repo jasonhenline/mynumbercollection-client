@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TouchableHighlight, View } from "react-native";
 import GridView from "./GridView";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 type GridCarouselViewProps = {
     numberToCount: Map<number, number>;
