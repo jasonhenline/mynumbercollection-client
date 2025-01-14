@@ -2,6 +2,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from 'expo-router/drawer';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react-native";
 import { Amplify } from "aws-amplify";
+import { DataProvider } from "@/DataContext";
 
 Amplify.configure({
   Auth: {
@@ -17,24 +18,26 @@ export default function RootLayout() {
   return (
     <Authenticator.Provider>
       <Authenticator>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Drawer>
-            <Drawer.Screen
-              name="index"
-              options={{
-                drawerLabel: "Home",
-                title: "Home",
-              }}
-            />
-            <Drawer.Screen
-              name="about"
-              options={{
-                drawerLabel: "About",
-                title: "About",
-              }}
-            />
-          </Drawer>
-        </GestureHandlerRootView>
+        <DataProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Drawer>
+              <Drawer.Screen
+                name="index"
+                options={{
+                  drawerLabel: "Home",
+                  title: "Home",
+                }}
+              />
+              <Drawer.Screen
+                name="about"
+                options={{
+                  drawerLabel: "About",
+                  title: "About",
+                }}
+              />
+            </Drawer>
+          </GestureHandlerRootView>
+        </DataProvider>
       </Authenticator>
     </Authenticator.Provider>
   );

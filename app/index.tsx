@@ -1,12 +1,16 @@
 import { Button, Text, View, StyleSheet } from "react-native";
-import { Link, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import GridCarouselView from "@/components/GridCarouselView";
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
 import { useEffect } from "react";
+import { useData } from "@/DataContext";
 
 export default function Index() {
-  const { signOut } = useAuthenticator();
+  const { user, signOut } = useAuthenticator();
   const navigation = useNavigation();
+
+  // This is how to get the ID of the authenticated user.
+  user.userId;
 
   useEffect(() => {
     navigation.setOptions({
@@ -20,24 +24,16 @@ export default function Index() {
           />
         </View>
       )
-    })
-  })
+    });
+  }, []);
+
+  const {numberToCountMap, grants, nextGrantTimestamp, isLoading, error, refreshData} = useData();
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Number Collection</Text>
       <GridCarouselView
-        numberToCount={
-          new Map(
-            [
-              [3, 4],
-              [8, 1],
-              [16, 2],
-              [34, 1],
-              [102, 2],
-              [199, 1],
-            ])
-        }
+        numberToCount={numberToCountMap}
       ></GridCarouselView>
     </View>
   );
