@@ -4,6 +4,7 @@ import GridCarouselView from "@/components/GridCarouselView";
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
 import { useEffect } from "react";
 import { useData } from "@/DataContext";
+import GrantButtonView from "@/components/GrantButtonView";
 
 export default function Index() {
   const { user, signOut } = useAuthenticator();
@@ -32,9 +33,8 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Number Collection</Text>
-      <GridCarouselView
-        numberToCount={numberToCountMap}
-      ></GridCarouselView>
+      <GridCarouselView numberToCount={numberToCountMap} />
+      <GrantButtonView />
     </View>
   );
 }
@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#25292e",
     justifyContent: "center",
     alignItems: "center",
+    gap: 20,
   },
   header: {
     color: "#fff",
     fontSize: 24,
-    marginBottom: 20,
   },
   text: {
     color: "#fff",
