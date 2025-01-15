@@ -34,6 +34,7 @@ export default function GrantButtonView(props: GrantButtonViewProps) {
         }
 
         interval = setInterval(run, 1000);
+        run();
     }, [nextGrantTimestamp])
 
     if (isLoading || localIsLoading) {
