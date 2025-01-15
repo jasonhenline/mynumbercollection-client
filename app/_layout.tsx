@@ -10,6 +10,10 @@ Amplify.configure({
       //region: "us-east-1",
       userPoolClientId: "1plkm206kt5gqsbrfmc2bpi6ne",
       userPoolId: "us-east-1_9x8Ke7jsx",
+      loginWith: {
+        username: true,
+        email: true,
+      }
     }
   },
 });
