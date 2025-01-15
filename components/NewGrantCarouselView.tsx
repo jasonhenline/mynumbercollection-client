@@ -38,6 +38,7 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
                     <AntDesign name="right" color={rightColor} size={arrowSize}></AntDesign>
                 </TouchableHighlight>
             </View>
+            <Text style={{color: "#fff", fontSize: 24}}>{cardIndex + 1}/{sortedNumbers.length}</Text>
             <Button title="Back to Grid" onPress={props.onBackToGrid} />
         </View>
     )
