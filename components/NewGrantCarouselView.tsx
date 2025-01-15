@@ -27,7 +27,7 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
                 <TouchableHighlight onPress={() => setCardIndex(cardIndex - 1)} disabled={cardIndex === 0}>
                     <AntDesign name="left" color={leftColor} size={arrowSize}></AntDesign>
                 </TouchableHighlight>
-                <View style={{flexDirection: "column", alignItems: "center", justifyContent: "center", width: 200, height: 350, borderWidth: 1, borderColor: "#fff", borderRadius: 20}}>
+                <View style={{flexDirection: "column", alignItems: "center", justifyContent: "center", width: 180, height: 290, borderWidth: 1, borderColor: "#fff", borderRadius: 20}}>
                     <Text style={{fontSize: 100, color: "#fff"}}>{sortedNumbers[cardIndex]}</Text>
                     {
                         numberToNewMap.get(sortedNumbers[cardIndex]) &&
