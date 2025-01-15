@@ -29,6 +29,13 @@ export default function RootLayout() {
                 }}
               />
               <Drawer.Screen
+                name="counts"
+                options={{
+                  drawerLabel: "Counts",
+                  title: "Counts",
+                }}
+              />
+              <Drawer.Screen
                 name="about"
                 options={{
                   drawerLabel: "About",
