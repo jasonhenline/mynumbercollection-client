@@ -11,7 +11,7 @@ export default function GridCarouselView(props: GridCarouselViewProps) {
     const [pageNumber, setPageNumber] = useState(0);
 
     const numberSet = new Set<number>(props.numberToCount.keys());
-    const maxNumber = Math.max(...numberSet);
+    const maxNumber = Math.max(0, ...numberSet);
     const maxPageNumber = Math.floor(maxNumber / 100);
 
     const leftColor = pageNumber === 0 ? "gray" : "white";
