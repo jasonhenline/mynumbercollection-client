@@ -6,10 +6,12 @@ import { useEffect, useState } from "react";
 import { useData } from "@/DataContext";
 import GrantButtonView from "@/components/GrantButtonView";
 import NewGrantCarouselView from "@/components/NewGrantCarouselView";
+import createApiClient from "@/clients/apiClient";
 
 export default function Index() {
   const { signOut } = useAuthenticator();
   const navigation = useNavigation();
+  const { user } = useAuthenticator();
 
   useEffect(() => {
     navigation.setOptions({
@@ -26,8 +28,8 @@ export default function Index() {
     });
   }, []);
 
-  const [isNewGrantView, setIsNewGrantView] = useState<boolean>(true); // TODO: Start this as false.
-  const [newGrantNumberToNewMap, setNewGrantNumberToNewMap] = useState<Map<number, boolean>>(new Map([[0, false], [10, true], [200, false], [350, true]]));
+  const [isNewGrantView, setIsNewGrantView] = useState<boolean>(false);
+  const [newNumbers, setNewNumbers] = useState<{number: number, isNew: boolean}[]>([]);
   const { numberToCountMap,  isLoading, refreshData } = useData();
 
   if (isLoading) {
@@ -39,7 +41,7 @@ export default function Index() {
   }
 
   if (isNewGrantView) {
-    if (newGrantNumberToNewMap.size === 0) {
+    if (newNumbers.length === 0) {
       return (
         <View style={styles.container}>
           <Text style={styles.header}>No new numbers available</Text>
@@ -47,20 +49,25 @@ export default function Index() {
       );
     }
 
-    const newNumbers = Array.from(newGrantNumberToNewMap.keys());
-    newNumbers.sort((a, b) => a - b);
-
     return (
       <View style={styles.container}>
-        <NewGrantCarouselView numberToNewMap={newGrantNumberToNewMap} onBackToGrid={() => setIsNewGrantView(false)} />
+        <NewGrantCarouselView newNumbers={newNumbers} onBackToGrid={() => setIsNewGrantView(false)} />
       </View>
     )
   }
 
   async function handleGetNewNumbersPress() {
-    // TODO: Make network call to get new numbers.
-    // TODO: Set newGrantNumberToNewMap to the new numbers.
-    // TODO: Call the function to refresh the data.
+    const oldNumbers = new Set<number>([...numberToCountMap.keys()]);
+    const apiClient = await createApiClient()
+    const fetchedNumbers = await apiClient.fetchNewNumbers(user.userId);
+    const newNumbersValue: {number: number, isNew: boolean}[] = [];
+    for (const [n, c] of fetchedNumbers.entries()) {
+      const isNew = !oldNumbers.has(n);
+      for (let i = 0; i < c; i++) {
+        newNumbersValue.push({number: n, isNew});
+      }
+    }
+    setNewNumbers(newNumbersValue);
     await refreshData();
     setIsNewGrantView(true);
   }

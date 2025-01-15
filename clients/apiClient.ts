@@ -38,6 +38,17 @@ class ApiClient {
         return new Date(nextGrantTimestampJson["next_grant_time"]);
     }
 
+    async fetchNewNumbers(userId: string): Promise<Map<number, number>> {
+        const newNumbersJson = await this.fetchJson(`/${userId}/add-numbers`, {method: "POST"});
+        const numberToNewMap = new Map<number, number>();
+        for (const numberRecord of newNumbersJson["numbers"]) {
+            const number = numberRecord["number"];
+            const count = numberRecord["count"];
+            numberToNewMap.set(number, count);
+        }
+        return numberToNewMap;
+    }
+
     async fetchJson(endpoint: string, options: RequestInit = {}) {
         const headers = {
             ...options.headers,

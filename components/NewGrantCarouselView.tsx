@@ -3,13 +3,18 @@ import { Button, Text, TouchableHighlight, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
 type NewGrantCarouselViewProps = {
-    numberToNewMap: Map<number, boolean>;
+    newNumbers: {number: number, isNew: boolean}[];
     onBackToGrid: () => void;
 }
 
 export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
     const [cardIndex, setCardIndex] = useState(0);
-    const sortedNumbers = Array.from(props.numberToNewMap.keys()).sort((a, b) => a - b);
+    const numberToNewMap = new Map<number, boolean>();
+    for (const {number, isNew} of props.newNumbers) {
+        numberToNewMap.set(number, isNew);
+    }
+
+    const sortedNumbers = props.newNumbers.map((n) => n.number).sort((a, b) => a - b);
 
     const leftColor = cardIndex === 0 ? "gray" : "white";
     const rightColor = cardIndex === sortedNumbers.length - 1 ? "gray" : "white";
@@ -25,7 +30,7 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
                 <View style={{flexDirection: "column", alignItems: "center", justifyContent: "center", width: 200, height: 350, borderWidth: 1, borderColor: "#fff", borderRadius: 20}}>
                     <Text style={{fontSize: 100, color: "#fff"}}>{sortedNumbers[cardIndex]}</Text>
                     {
-                        props.numberToNewMap.get(sortedNumbers[cardIndex]) &&
+                        numberToNewMap.get(sortedNumbers[cardIndex]) &&
                             <Text style={{fontSize: 24, color: "#fff"}}>NEW</Text>
                     }
                 </View>
