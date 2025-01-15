@@ -1,17 +1,15 @@
-import { Button, Text, View, StyleSheet } from "react-native";
+import { Button, Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { useNavigation } from "expo-router";
 import GridCarouselView from "@/components/GridCarouselView";
 import { useAuthenticator } from "@aws-amplify/ui-react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useData } from "@/DataContext";
 import GrantButtonView from "@/components/GrantButtonView";
+import NewGrantCarouselView from "@/components/NewGrantCarouselView";
 
 export default function Index() {
-  const { user, signOut } = useAuthenticator();
+  const { signOut } = useAuthenticator();
   const navigation = useNavigation();
-
-  // This is how to get the ID of the authenticated user.
-  user.userId;
 
   useEffect(() => {
     navigation.setOptions({
@@ -28,13 +26,50 @@ export default function Index() {
     });
   }, []);
 
-  const {numberToCountMap, grants, nextGrantTimestamp, isLoading, error, refreshData} = useData();
+  const [isNewGrantView, setIsNewGrantView] = useState<boolean>(true); // TODO: Start this as false.
+  const [newGrantNumberToNewMap, setNewGrantNumberToNewMap] = useState<Map<number, boolean>>(new Map([[0, false], [10, true], [200, false], [350, true]]));
+  const { numberToCountMap,  isLoading, refreshData } = useData();
+
+  if (isLoading) {
+      return (
+          <View style={styles.container}>
+              <ActivityIndicator size="large" color="#fff" />
+          </View>
+      );
+  }
+
+  if (isNewGrantView) {
+    if (newGrantNumberToNewMap.size === 0) {
+      return (
+        <View style={styles.container}>
+          <Text style={styles.header}>No new numbers available</Text>
+        </View>
+      );
+    }
+
+    const newNumbers = Array.from(newGrantNumberToNewMap.keys());
+    newNumbers.sort((a, b) => a - b);
+
+    return (
+      <View style={styles.container}>
+        <NewGrantCarouselView numberToNewMap={newGrantNumberToNewMap} onBackToGrid={() => setIsNewGrantView(false)} />
+      </View>
+    )
+  }
+
+  async function handleGetNewNumbersPress() {
+    // TODO: Make network call to get new numbers.
+    // TODO: Set newGrantNumberToNewMap to the new numbers.
+    // TODO: Call the function to refresh the data.
+    await refreshData();
+    setIsNewGrantView(true);
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Number Collection</Text>
       <GridCarouselView numberToCount={numberToCountMap} />
-      <GrantButtonView />
+      <GrantButtonView onGetNewNumbersPress={handleGetNewNumbersPress} />
     </View>
   );
 }

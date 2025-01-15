@@ -2,42 +2,53 @@ import { ActivityIndicator, Button, Text, View, StyleSheet } from "react-native"
 import { useData } from "@/DataContext";
 import { useEffect, useState } from "react";
 
-export default function GrantButtonView() {
+type GrantButtonViewProps = {
+    onGetNewNumbersPress: () => void;
+}
+
+export default function GrantButtonView(props: GrantButtonViewProps) {
     const [showGrantButton, setShowGrantButton] = useState<boolean>(false);
     const [countdown, setCountdown] = useState<string|null>(null);
+    const [localIsLoading, setLocalIsLoading] = useState<boolean>(true);
 
     const { isLoading, nextGrantTimestamp } = useData();
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        let interval: ReturnType<typeof setInterval>|null = null;
+        const run = () => {
             const now = new Date();
             const timeDifference = nextGrantTimestamp.getTime() - now.getTime();
             if (timeDifference <= 0) {
                 setCountdown(null);
                 setShowGrantButton(true);
-                clearInterval(interval);
+                if (interval) {
+                    clearInterval(interval);
+                }
             } else {
                 const hours = Math.floor(timeDifference / 1000 / 60 / 60);
                 const minutes = Math.floor((timeDifference / 1000 / 60) % 60);
                 const seconds = Math.floor((timeDifference / 1000) % 60);
                 setCountdown(`${hours}h ${minutes}m ${seconds}s`);
             }
-        }, 1000);
+            setLocalIsLoading(false);
+        }
+
+        interval = setInterval(run, 1000);
     }, [nextGrantTimestamp])
 
-    if (isLoading) {
+    if (isLoading || localIsLoading) {
         return (
-            <View style={styles.centered}>
+            <View>
                 <ActivityIndicator size="large" color="#fff" />
-                <Text>Loading...</Text>
             </View>
         );
     }
 
     if (showGrantButton) {
-        return <Button title="Get New Numbers" onPress={() => {}}></Button>
+        return <Button title="Get New Numbers" onPress={props.onGetNewNumbersPress}></Button>
     }
 
+    console.log(`XXXXXXXXXXX returning countdown view`);
     return (
         <Text style={styles.countdown}>New numbers available in: {countdown}</Text>
     )
