@@ -36,10 +36,10 @@ export default function RootLayout() {
                 }}
               />
               <Drawer.Screen
-                name="about"
+                name="grants"
                 options={{
-                  drawerLabel: "About",
-                  title: "About",
+                  drawerLabel: "Packs",
+                  title: "Packs",
                 }}
               />
             </Drawer>
