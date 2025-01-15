@@ -12,7 +12,13 @@ export default function Counts() {
     )
   }
 
-  const sortedNumbers = [...numberToCountMap.keys()].sort((a, b) => a - b);
+  const sortedNumbers = Array.from(numberToCountMap).sort((a, b) => {
+    if (a[1] !== b[1]) {
+        return b[1] - a[1];
+    }
+    return b[0] - a[0];
+  }).map(([number, _]) => number);
+
   const rows = sortedNumbers.map((number) => (
     <View key={number} style={styles.row}>
         <View style={styles.rowView}>
