@@ -1,7 +1,7 @@
-import { Button, Text, View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { useData } from "@/DataContext";
 import { useEffect, useState } from "react";
-import { DataTable } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, DataTable } from "react-native-paper";
 
 export default function Counts() {
   const { numberToCountMap,  isLoading } = useData();
@@ -9,7 +9,7 @@ export default function Counts() {
   if (isLoading) {
     return (
         <View style={styles.container}>
-            <ActivityIndicator size="large" color="#fff" />
+            <ActivityIndicator size="large" />
         </View>
     )
   }
@@ -106,62 +106,12 @@ export default function Counts() {
         />
       </DataTable>
   )
-
-  const rows = sortedNumbers.map((number) => (
-    <View key={number} style={styles.row}>
-        <View style={styles.rowView}>
-            <Text style={styles.text}>{number}</Text>
-        </View>
-        <View style={styles.rowView}>
-            <Text style={styles.text}>{numberToCountMap.get(number)}</Text>
-        </View>
-    </View>
-  ));
-
-  return (
-    <View style={styles.container}>
-        <View style={styles.row}>
-            <View style={styles.rowView}>
-                <Text style={styles.tableHeader}>Number</Text>
-            </View>
-            <View style={styles.rowView}>
-                <Text style={styles.tableHeader}>Count</Text>
-            </View>
-        </View>
-        <ScrollView>
-            {rows}
-        </ScrollView>
-    </View>
-  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#25292e",
     justifyContent: "center",
     alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-  },
-  text: {
-    flex: 1,
-    color: '#fff',
-    fontSize: 20,
-    borderWidth: 1,
-    borderColor: "#fff",
-    textAlign: "right",
-    padding: 5,
-  },
-  tableHeader: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 5,
-  },
-  rowView: {
-    width: 120,
   }
 });
