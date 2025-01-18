@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TouchableHighlight, View } from "react-native";
 import GridView from "./GridView";
 import { AntDesign } from "@expo/vector-icons";
+import { useTheme } from "react-native-paper";
 
 type GridCarouselViewProps = {
     numberToCount: Map<number, number>;
@@ -14,8 +15,10 @@ export default function GridCarouselView(props: GridCarouselViewProps) {
     const maxNumber = Math.max(0, ...numberSet);
     const maxPageNumber = Math.floor(maxNumber / 100);
 
-    const leftColor = pageNumber === 0 ? "gray" : "white";
-    const rightColor = pageNumber === maxPageNumber ? "gray" : "white";
+    const theme = useTheme()
+
+    const leftColor = pageNumber === 0 ? theme.colors.onSurfaceDisabled : theme.colors.onSurface;
+    const rightColor = pageNumber === maxPageNumber ? theme.colors.onSurfaceDisabled : theme.colors.onSurface;
     const arrowSize = 36;
 
     return (

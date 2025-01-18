@@ -1,7 +1,7 @@
-import { Button, Text, View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useData } from "@/DataContext";
 import { Grant } from "@/model/Grant";
-import { DataTable } from "react-native-paper";
+import { ActivityIndicator, DataTable } from "react-native-paper";
 import { useEffect, useState } from "react";
 
 export default function Grants() {
@@ -10,7 +10,7 @@ export default function Grants() {
     if (isLoading) {
       return (
           <View style={styles.container}>
-              <ActivityIndicator size="large" color="#fff" />
+              <ActivityIndicator size="large" style={{paddingTop: 32}} />
           </View>
       )
     }
@@ -68,54 +68,10 @@ export default function Grants() {
         />
       </DataTable>
     );
-
-    // const reversedGrants = [...grants].reverse();
-
-    // const rows = reversedGrants.map((grant) => (
-    //   <View key={grant.timestamp.toString()} style={styles.row}>
-    //       <View style={styles.rowView}>
-    //           <Text style={styles.text}>{grant.timestamp.toLocaleString()}</Text>
-    //       </View>
-    //       <View style={styles.rowView}>
-    //           <Text style={styles.text}>{getGrantString(grant)}</Text>
-    //       </View>
-    //   </View>
-    // ));
-
-    // return (
-    //     <View style={styles.container}>
-    //         <ScrollView>
-    //             {rows}
-    //         </ScrollView>
-    //     </View>
-    // )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-  },
-  row: {
-    flexDirection: "row",
-  },
-  text: {
-    flex: 1,
-    color: '#fff',
-    fontSize: 14,
-    borderWidth: 1,
-    borderColor: "#fff",
-    textAlign: "right",
-    padding: 5,
-  },
-  tableHeader: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 5,
-  },
-  rowView: {
     flex: 1,
   }
 });

@@ -1,6 +1,7 @@
-import { ActivityIndicator, Button, Text, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useData } from "@/DataContext";
 import { useEffect, useState } from "react";
+import { ActivityIndicator, Button, Text } from "react-native-paper";
 
 type GrantButtonViewProps = {
     onGetNewNumbersPress: () => void;
@@ -40,22 +41,20 @@ export default function GrantButtonView(props: GrantButtonViewProps) {
     if (isLoading || localIsLoading) {
         return (
             <View>
-                <ActivityIndicator size="large" color="#fff" />
+                <ActivityIndicator size="large" />
             </View>
         );
     }
 
     if (showGrantButton) {
-        return <Button title="Get New Numbers" onPress={props.onGetNewNumbersPress}></Button>
+        return <Button mode="contained" onPress={props.onGetNewNumbersPress}>Get New Numbers</Button>
     }
 
-    console.log(`XXXXXXXXXXX returning countdown view`);
     return (
-        <Text style={styles.countdown}>New numbers available in: {countdown}</Text>
+        <Text variant="titleMedium">New numbers available in: {countdown}</Text>
     )
 }
 
 const styles = StyleSheet.create({
     centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-    countdown: { fontSize: 18, textAlign: "center", color: "#fff" },
 });

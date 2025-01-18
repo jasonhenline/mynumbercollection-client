@@ -1,5 +1,5 @@
-import { Text, View, StyleSheet } from "react-native";
-
+import { View, StyleSheet } from "react-native";
+import { Text } from "react-native-paper";
 type GridViewProps = {
     numberToCount: Map<number, number>;
     startNumber: number;
@@ -12,6 +12,8 @@ export default function GridView(props: GridViewProps) {
         const elements = [];
         for (let colIndex = 0; colIndex < 10; colIndex++) {
             const number = props.startNumber + rowIndex * 10 + colIndex;
+            // The below colors are not themed, because they are a core part of
+            // the existing visual identity of the app.
             const backgroundColor = numberSet.has(number) ? "green" : "#bbb";
             const color = numberSet.has(number) ? "white" : "gray";
             elements.push(
@@ -49,9 +51,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-    },
-    text: {
-        color: "#fff",
     },
     cell: {
         width: 30,
