@@ -3,7 +3,7 @@ import { Drawer } from 'expo-router/drawer';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react-native";
 import { Amplify } from "aws-amplify";
 import { DataProvider } from "@/DataContext";
-import { PaperProvider } from "react-native-paper";
+import { MD3LightTheme, PaperProvider } from "react-native-paper";
 
 Amplify.configure({
   Auth: {
@@ -20,10 +20,12 @@ Amplify.configure({
 });
 
 export default function RootLayout() {
+  const paperTheme = MD3LightTheme;
+  
   return (
     <Authenticator.Provider>
       <Authenticator>
-        <PaperProvider>
+        <PaperProvider theme={paperTheme}>
           <DataProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <Drawer>
