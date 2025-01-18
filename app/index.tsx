@@ -35,7 +35,7 @@ export default function Index() {
   // other pages. This means that it is not dynamically styled based on the users dark / light
   // color preference.
   const darkTheme = MD3DarkTheme
-  const styles = getStyles(darkTheme.colors.background)
+  const styles = getStyles(darkTheme.colors.surface)
 
   /** 
    * Wraps the given element in its own PaperProvider, which detaches it from the regular user
