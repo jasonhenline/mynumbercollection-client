@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { TouchableHighlight, View } from "react-native";
+import { View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Button, Text, TouchableRipple, useTheme } from "react-native-paper";
+import { getCardColor } from "@/styles/getCardColor";
 
 type NewGrantCarouselViewProps = {
     newNumbers: {number: number, isNew: boolean}[];
@@ -37,7 +38,17 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
                 <TouchableRipple onPress={() => setCardIndex(cardIndex - 1)} disabled={cardIndex === 0}>
                     <AntDesign name="left" color={leftColor} size={arrowSize}></AntDesign>
                 </TouchableRipple>
-                <View style={{flexDirection: "column", alignItems: "center", justifyContent: "center", width: 180, height: 290, borderWidth: 1, borderColor: theme.colors.onSurface, borderRadius: 20}}>
+                <View style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 180,
+                    height: 290,
+                    borderWidth: 1,
+                    borderColor: theme.colors.onSurface,
+                    borderRadius: 20,
+                    backgroundColor: getCardColor(sortedNumbers[cardIndex]),
+                }}>
                     <Text style={extraLargeFontStyles}>{sortedNumbers[cardIndex]}</Text>
                     {
                         numberToNewMap.get(sortedNumbers[cardIndex]) &&
