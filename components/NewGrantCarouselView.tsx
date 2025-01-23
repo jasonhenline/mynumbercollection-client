@@ -16,7 +16,7 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
         numberToNewMap.set(number, isNew);
     }
 
-    const sortedNumbers = props.newNumbers.map((n) => n.number).sort((a, b) => a - b);
+    const sortedNumbers = props.newNumbers.map((n) => n.number).sort((a, b) => Math.abs(a) - Math.abs(b));
 
     const theme = useTheme()
 
