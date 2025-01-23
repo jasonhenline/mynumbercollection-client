@@ -12,10 +12,12 @@
     npx expo start
    ```
 
+You can ignore console errors about version.json not being served when you run locally. Those are expected for a local run.
+
 ## Bundle for deploy
 
 ```bash
-npx expo export -p web
+npm run build:web
 ```
 
 This will create the deployable assets in the `dist` directory.

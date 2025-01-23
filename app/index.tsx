@@ -8,11 +8,14 @@ import GrantButtonView from "@/components/GrantButtonView";
 import NewGrantCarouselView from "@/components/NewGrantCarouselView";
 import createApiClient from "@/clients/apiClient";
 import { ActivityIndicator, Button, MD3DarkTheme, PaperProvider, Text, useTheme } from "react-native-paper";
+import versionInfo from "@/data/version.json";
 
 export default function Index() {
   const { signOut } = useAuthenticator();
   const navigation = useNavigation();
   const { user } = useAuthenticator();
+  const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -28,6 +31,27 @@ export default function Index() {
         </View>
       )
     });
+  }, []);
+
+  useEffect(() => {
+    async function checkForUpdate() {
+      try {
+        const response = await fetch("/version.json");
+        const latestVersion = await response.json();
+
+        if (latestVersion.version !== versionInfo.version) {
+          setIsUpdateAvailable(true);
+        }
+      } catch (error) {
+        console.error("Error checking for update: ", error);
+      }
+    }
+
+    checkForUpdate();
+
+    const intervalId = setInterval(checkForUpdate, 1000 * 60 * 60);
+
+    return () => clearInterval(intervalId);
   }, []);
 
 
@@ -96,6 +120,7 @@ export default function Index() {
       <Text variant="headlineSmall">Your Number Collection</Text>
       <GridCarouselView numberToCount={numberToCountMap} />
       <GrantButtonView onGetNewNumbersPress={handleGetNewNumbersPress} />
+      {isUpdateAvailable && <Text variant="titleMedium">A new version of the app is available. Please refresh to update.</Text>}
     </View>
   );
 }
