@@ -80,7 +80,7 @@ export default function CardView(props: CardViewProps) {
         width: 240,
         height: 340,
         borderWidth: 10,
-        borderColor: props.number < 0 ? foreground : "#ffffff66",
+        borderColor: props.number < 0 ? "#00000066" : "#ffffff66",
         borderRadius: 20,
         backgroundColor: background,
     }}>
