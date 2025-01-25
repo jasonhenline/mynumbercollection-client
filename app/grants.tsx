@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import { useData } from "@/DataContext";
 import { Grant } from "@/model/Grant";
-import { ActivityIndicator, DataTable } from "react-native-paper";
+import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 
 export default function Grants() {
@@ -27,8 +27,9 @@ export default function Grants() {
     }
 
     const [page, setPage] = useState(0);
-    const [numberOfItemsPerPageList] = useState([5]);
-    const [itemsPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[0]);
+
+    const minimumAllowedRows = 3
+    const [itemsPerPage, setItemsPerPage] = useState(minimumAllowedRows);
 
     const sortedGrants = [...grants].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
@@ -42,36 +43,60 @@ export default function Grants() {
     }, [itemsPerPage]);
 
     return (
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title sortDirection={"descending"}>Time</DataTable.Title>
-          <DataTable.Title>Numbers</DataTable.Title>
-        </DataTable.Header>
+        <DataTable style={{flexGrow: 1, maxHeight: '100%'}} onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
 
-        {items.slice(from, to).map((item) => (
-            <DataTable.Row key={item.key}>
-              <DataTable.Cell>{item.time}</DataTable.Cell>
-              <DataTable.Cell textStyle={{fontSize: 9}}>{item.numbers}</DataTable.Cell>
-            </DataTable.Row>
-        ))}
+            // During tab transitions, the height briefly flickers to zero which can set bad state.
+            // We just ignore zero-height layouts to sidestep this issue.
+            if (height <= 0) {
+                return
+            }
+            // This calculation is only safe because every row (including the header and footer)
+            // is constrained to a height of 48. We subtract 2 rows to account for the header and footer.
+            const calculatedRowsPerPage = Math.floor(height / styles.constrainHeight.maxHeight) - 2
 
-        <DataTable.Pagination
-          page={page}
-          numberOfPages={Math.ceil(items.length / itemsPerPage)}
-          onPageChange={(page) => setPage(page)}
-          label={`${from + 1}-${to} of ${items.length}`}
-          //numberOfItemsPerPageList={numberOfItemsPerPageList}
-          numberOfItemsPerPage={5}
-          //onItemsPerPageChange={onItemsPerPageChange}
-          //showFastPaginationControls
-          //selectPageDropdownLabel={'Rows per page'}
-        />
-      </DataTable>
+            // We take the max of the calculation and minimumAllowedRows as a failsafe against edge cases
+            // with vanishingly small screens.
+            setItemsPerPage(Math.max(minimumAllowedRows, calculatedRowsPerPage))
+        }}>
+            <DataTable.Header style={styles.constrainHeight}>
+                <DataTable.Title style={styles.dateColumn} sortDirection={"descending"}>Time</DataTable.Title>
+                <DataTable.Title style={styles.numberColumn}>Numbers</DataTable.Title>
+            </DataTable.Header>
+
+            {items.slice(from, to).map((item) => (
+                <DataTable.Row key={item.key} style={styles.constrainHeight}>
+                    <DataTable.Cell style={styles.dateColumn}><Text numberOfLines={2}>{item.time}</Text></DataTable.Cell>
+                    <DataTable.Cell style={styles.numberColumn}><Text numberOfLines={2}>{item.numbers}</Text></DataTable.Cell>
+                </DataTable.Row>
+            ))}
+
+            <DataTable.Pagination
+                style={styles.constrainHeight}
+                page={page}
+                numberOfPages={Math.ceil(items.length / itemsPerPage)}
+                onPageChange={(page) => setPage(page)}
+                label={`${from + 1}-${to} of ${items.length}`}
+                numberOfItemsPerPage={itemsPerPage}
+            />
+        </DataTable>
     );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  dateColumn: {
+    flexShrink: 2,
+  },
+  numberColumn: {
+    flexShrink: 0,
+    flexGrow: 2,
+    paddingLeft: 16,
+    minWidth: 150,
+  },
+  constrainHeight: {
+    maxHeight: 48
   }
 });

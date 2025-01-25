@@ -1,6 +1,6 @@
 import { useData } from "@/DataContext";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, DataTable } from "react-native-paper";
 
 export default function Counts() {
@@ -15,8 +15,9 @@ export default function Counts() {
   }
 
   const [page, setPage] = useState(0);
-  const [numberOfItemsPerPageList] = useState([5]);
-  const [itemsPerPage, onItemsPerPageChange] = useState(numberOfItemsPerPageList[0]);
+
+  const minimumAllowedRows = 3
+  const [itemsPerPage, setItemsPerPage] = useState(minimumAllowedRows);
 
   const sortedNumbers = Array.from(numberToCountMap).sort((a, b) => {
     if (a[1] !== b[1]) {
@@ -80,29 +81,42 @@ export default function Counts() {
   }
 
   return (
-      <DataTable>
-        <DataTable.Header>
+      <DataTable style={{flexGrow: 1, maxHeight: '100%'}} onLayout={(event) => {
+        const { height } = event.nativeEvent.layout;
+
+        // During tab transitions, the height briefly flickers to zero which can set bad state.
+        // We just ignore zero-height layouts to sidestep this issue.
+        if (height <= 0) {
+            return
+        }
+
+        // This calculation is only safe because every row (including the header and footer)
+        // is constrained to a height of 48. We subtract 2 rows to account for the header and footer.
+        const calculatedRowsPerPage = Math.floor(height / styles.constrainHeight.maxHeight) - 2
+
+        // We take the max of the calculation and minimumAllowedRows as a failsafe against edge cases
+        // with vanishingly small screens.
+        setItemsPerPage(Math.max(minimumAllowedRows, calculatedRowsPerPage))
+    }}>
+        <DataTable.Header style={styles.constrainHeight}>
           <DataTable.Title sortDirection={numberSortDirection} onPress={onNumberHeaderPress}>Number</DataTable.Title>
           <DataTable.Title sortDirection={countSortDirection} onPress={onCountHeaderPress}>Count</DataTable.Title>
         </DataTable.Header>
 
         {items.slice(from, to).map((item) => (
-            <DataTable.Row key={item.key}>
-              <DataTable.Cell>{item.number}</DataTable.Cell>
-              <DataTable.Cell>{item.count}</DataTable.Cell>
+            <DataTable.Row key={item.key} style={styles.constrainHeight}>
+              <DataTable.Cell><Text>{item.number}</Text></DataTable.Cell>
+              <DataTable.Cell><Text>{item.count}</Text></DataTable.Cell>
             </DataTable.Row>
         ))}
 
         <DataTable.Pagination
+          style={styles.constrainHeight}
           page={page}
           numberOfPages={Math.ceil(items.length / itemsPerPage)}
           onPageChange={(page) => setPage(page)}
           label={`${from + 1}-${to} of ${items.length}`}
-          //numberOfItemsPerPageList={numberOfItemsPerPageList}
-          numberOfItemsPerPage={5}
-          //onItemsPerPageChange={onItemsPerPageChange}
-          //showFastPaginationControls
-          //selectPageDropdownLabel={'Rows per page'}
+          numberOfItemsPerPage={itemsPerPage}
         />
       </DataTable>
   )
@@ -113,5 +127,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
+  constrainHeight: {
+    maxHeight: 48
+  },
 });
