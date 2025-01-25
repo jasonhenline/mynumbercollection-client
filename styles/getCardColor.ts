@@ -8,7 +8,7 @@ export type CardColor = {
 function cardBackgroundColor(rarity: Rarity): string {
   switch (rarity) {
     case Rarity.Trash:
-      return "#999999";
+      return "hsl(130, 0%, 46%)";
     case Rarity.Common:
       return "hsl(130, 60%, 46%)";
     case Rarity.Uncommon:
@@ -27,7 +27,7 @@ function cardBackgroundColor(rarity: Rarity): string {
 function gridBackgroundColor(rarity: Rarity): string {
   switch (rarity) {
     case Rarity.Trash:
-      return "#999999";
+      return "hsl(130, 0%, 26%)";
     case Rarity.Common:
       return "hsl(130, 60%, 26%)";
     case Rarity.Uncommon:
@@ -46,7 +46,7 @@ function gridBackgroundColor(rarity: Rarity): string {
 function negativeBackgroundColor(rarity: Rarity): string {
   switch (rarity) {
     case Rarity.Trash:
-      return "#999999";
+      return "hsl(130, 0%, 6%)";
     case Rarity.Common:
       return "hsl(130, 60%, 6%)";
     case Rarity.Uncommon:
