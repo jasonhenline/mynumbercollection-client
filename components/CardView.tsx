@@ -101,7 +101,9 @@ function getFlavorText(number: number): string {
     if (creativeFlavorText) {
         return creativeFlavorText;
     }
-    return number < 0 ? "Negative " : "" + convertToWords(Math.abs(number));
+    return (
+        (number < 0 ? "Negative " : "") + convertToWords(Math.abs(number), "")
+    );
 }
 
 export default function CardView(props: CardViewProps) {
