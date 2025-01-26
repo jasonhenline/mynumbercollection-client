@@ -13,7 +13,7 @@ export default function GridView(props: GridViewProps) {
     // the existing visual identity of the app.
     function getColors(number: number) {
         if (!numberSet.has(number)) {
-            return {backgroundColor: "#bbb", color: "#555"};
+            return {backgroundColor: "#bbb", color: "#333"};
         }
         // Get the colors for this number from its rarity
         const {background, foreground} = getGridColor(number);
