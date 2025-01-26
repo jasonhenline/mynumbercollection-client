@@ -29,12 +29,12 @@ export default function GridView(props: GridViewProps) {
             const { backgroundColor, color } = getColors(number);
             elements.push(
                 <TouchableRipple
+                    key={colIndex}
                     onPress={() => {
                         props.pressedCardInGrid(number);
                     }}
                 >
                     <View
-                        key={colIndex}
                         style={{
                             ...styles.cell,
                             backgroundColor,

@@ -157,11 +157,9 @@ export default function Index() {
     }
 
     const triggerCollectionViewFromStartingCard = (card: number) => {
-        const allCards = [
-            ...numberToCountMap.keys().map((key) => {
-                return { number: key, isNew: false };
-            }),
-        ];
+        const allCards = [...numberToCountMap.keys()].map((key) => {
+            return { number: key, isNew: false };
+        });
 
         const startingIndex = allCards.findIndex(({ number }: CardEntry) => {
             return number === card;
