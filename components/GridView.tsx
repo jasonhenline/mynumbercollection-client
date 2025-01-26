@@ -1,9 +1,10 @@
 import { getCardColor, getGridColor } from "@/styles/getCardColor";
 import { View, StyleSheet } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, TouchableRipple } from "react-native-paper";
 type GridViewProps = {
     numberToCount: Map<number, number>;
     startNumber: number;
+    pressedCardInGrid: (card: number) => void;
 };
 
 export default function GridView(props: GridViewProps) {
@@ -27,22 +28,30 @@ export default function GridView(props: GridViewProps) {
             const number = props.startNumber + rowIndex * 10 + colIndex;
             const { backgroundColor, color } = getColors(number);
             elements.push(
-                <View
-                    key={colIndex}
-                    style={{
-                        ...styles.cell,
-                        backgroundColor,
+                <TouchableRipple
+                    onPress={() => {
+                        props.pressedCardInGrid(number);
                     }}
                 >
-                    <Text
+                    <View
+                        key={colIndex}
                         style={{
-                            color,
-                            fontWeight: numberSet.has(number) ? "bold" : 100,
+                            ...styles.cell,
+                            backgroundColor,
                         }}
                     >
-                        {number}
-                    </Text>
-                </View>,
+                        <Text
+                            style={{
+                                color,
+                                fontWeight: numberSet.has(number)
+                                    ? "bold"
+                                    : 100,
+                            }}
+                        >
+                            {number}
+                        </Text>
+                    </View>
+                </TouchableRipple>,
             );
         }
         const row = (
