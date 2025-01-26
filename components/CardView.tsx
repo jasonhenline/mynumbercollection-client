@@ -5,6 +5,7 @@ import { StyleProp } from "@/node_modules/react-native/Libraries/StyleSheet/Styl
 import { ViewStyle } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { convertToWords } from "react-number-to-words";
 import { isPrime, isSquare } from "@/utils/math";
+import { CreepifyText } from "@/utils/creepify";
 
 type CardViewProps = {
     number: number;
@@ -97,13 +98,13 @@ const numberToFlavorText = new Map<number, string>([
 ]);
 
 function getFlavorText(number: number): string {
-    const creativeFlavorText = numberToFlavorText.get(number);
-    if (creativeFlavorText) {
-        return creativeFlavorText;
-    }
-    return (
-        (number < 0 ? "Negative " : "") + convertToWords(Math.abs(number), "")
-    );
+    const flavorText =
+        numberToFlavorText.get(Math.abs(number)) ||
+        convertToWords(Math.abs(number), "");
+
+    return number >= 0
+        ? flavorText
+        : CreepifyText.sharedInstance.encode(flavorText);
 }
 
 export default function CardView(props: CardViewProps) {
