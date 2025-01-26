@@ -3,8 +3,10 @@ import { Drawer } from 'expo-router/drawer';
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react-native";
 import { Amplify } from "aws-amplify";
 import { DataProvider } from "@/DataContext";
-import { MD3LightTheme, MD3Theme, PaperProvider } from "react-native-paper";
+import { MD3Theme, PaperProvider } from "react-native-paper";
 import { Theme as NavigationTheme, ThemeProvider } from "@react-navigation/native";
+import { CustomDarkTheme, CustomLightTheme } from "@/styles/customtheme";
+import { useColorScheme } from "react-native";
 
 Amplify.configure({
   Auth: {
@@ -21,7 +23,11 @@ Amplify.configure({
 });
 
 export default function RootLayout() {
-  const paperTheme = MD3LightTheme;
+    const colorScheme = useColorScheme();  
+    const paperTheme =
+      colorScheme === 'dark'
+        ? CustomDarkTheme
+        : CustomLightTheme;
 
   /** Following the example from `react-native-paper/src/core/theming.tsx`, convert an MD3Theme into a NavigationTheme */
   const getMirroredReactNavigationTheme = (baseTheme: MD3Theme): NavigationTheme => {

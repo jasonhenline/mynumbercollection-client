@@ -1,7 +1,7 @@
 import { useData } from "@/DataContext";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { ActivityIndicator, DataTable } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 
 export default function Counts() {
   const { numberToCountMap,  isLoading } = useData();
