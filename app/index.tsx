@@ -91,7 +91,8 @@ export default function Index() {
     const [showNumberStartingIndex, setShowNumberStartingIndex] =
         useState<number>(0);
     const [startingNumberGridPage, setStartingNumberGridPage] = useState(0);
-
+    const [buildSuspenseInNumberCarousel, setBuildSuspenseInNumberCarousel] =
+        useState(false);
     const { numberToCountMap, isLoading, refreshData } = useData();
 
     if (isLoading) {
@@ -124,6 +125,7 @@ export default function Index() {
                 <NumberCarouselView
                     numbersToDisplay={numbersToDisplay}
                     carouselTitle={showNumberDisplayTitle}
+                    buildSuspense={buildSuspenseInNumberCarousel}
                     startingIndex={showNumberStartingIndex}
                     onBackToGrid={(number) => {
                         setStartingNumberGridPage(Math.floor(number / 100));
@@ -134,11 +136,18 @@ export default function Index() {
         );
     }
 
-    function setupAndShowNumberDisplayState(
-        numbersToShow: CardEntry[],
-        showNumberDisplayTitle: string,
-        showNumberStartingIndex: number = 0,
-    ) {
+    function setupAndShowNumberDisplayState({
+        numbersToShow,
+        showNumberDisplayTitle,
+        showNumberStartingIndex = 0,
+        buildSuspense = false,
+    }: {
+        numbersToShow: CardEntry[];
+        showNumberDisplayTitle: string;
+        showNumberStartingIndex?: number;
+        buildSuspense?: boolean;
+    }) {
+        setBuildSuspenseInNumberCarousel(buildSuspense);
         setNewNumbers(numbersToShow);
         setShowNumberDisplayTitle(showNumberDisplayTitle);
         setShowNumberStartingIndex(showNumberStartingIndex);
@@ -161,7 +170,11 @@ export default function Index() {
             (a, b) => Math.abs(a.number) - Math.abs(b.number),
         );
 
-        setupAndShowNumberDisplayState(sortedNumbers, "Your new numbers");
+        setupAndShowNumberDisplayState({
+            numbersToShow: sortedNumbers,
+            showNumberDisplayTitle: "Your new numbers",
+            buildSuspense: true,
+        });
     }
 
     const triggerCollectionViewFromStartingCard = (card: number) => {
@@ -172,7 +185,12 @@ export default function Index() {
         const startingIndex = allCards.findIndex(({ number }: CardEntry) => {
             return number === card;
         });
-        setupAndShowNumberDisplayState(allCards, "", startingIndex);
+        setupAndShowNumberDisplayState({
+            numbersToShow: allCards,
+            showNumberDisplayTitle: "",
+            showNumberStartingIndex: startingIndex,
+            buildSuspense: false,
+        });
     };
 
     return wrapInDarkThemeOverride(

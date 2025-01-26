@@ -11,6 +11,11 @@ type CardViewProps = {
     isNew: boolean;
 };
 
+export const CardDimensions = {
+    height: 340,
+    width: 240,
+};
+
 export default function CardView(props: CardViewProps) {
     const theme = useTheme();
 
@@ -32,6 +37,8 @@ export default function CardView(props: CardViewProps) {
         <View
             style={{
                 ...styles.cardContainer,
+                width: CardDimensions.width,
+                height: CardDimensions.height,
                 borderColor: props.number < 0 ? "#00000066" : "#ffffff66",
                 backgroundColor: background,
             }}
@@ -147,8 +154,6 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: 240,
-        height: 340,
         borderWidth: 10,
         borderRadius: 20,
     },
