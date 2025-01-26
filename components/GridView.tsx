@@ -1,10 +1,10 @@
-import {getCardColor, getGridColor} from '@/styles/getCardColor';
+import { getCardColor, getGridColor } from "@/styles/getCardColor";
 import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 type GridViewProps = {
     numberToCount: Map<number, number>;
     startNumber: number;
-}
+};
 
 export default function GridView(props: GridViewProps) {
     const numberSet = new Set<number>(props.numberToCount.keys());
@@ -13,11 +13,11 @@ export default function GridView(props: GridViewProps) {
     // the existing visual identity of the app.
     function getColors(number: number) {
         if (!numberSet.has(number)) {
-            return {backgroundColor: "#bbb", color: "#333"};
+            return { backgroundColor: "#bbb", color: "#333" };
         }
         // Get the colors for this number from its rarity
-        const {background, foreground} = getGridColor(number);
-        return {backgroundColor: background, color: foreground};
+        const { background, foreground } = getGridColor(number);
+        return { backgroundColor: background, color: foreground };
     }
 
     const rows = [];
@@ -25,7 +25,7 @@ export default function GridView(props: GridViewProps) {
         const elements = [];
         for (let colIndex = 0; colIndex < 10; colIndex++) {
             const number = props.startNumber + rowIndex * 10 + colIndex;
-            const {backgroundColor, color} = getColors(number);
+            const { backgroundColor, color } = getColors(number);
             elements.push(
                 <View
                     key={colIndex}
@@ -34,26 +34,26 @@ export default function GridView(props: GridViewProps) {
                         backgroundColor,
                     }}
                 >
-                    <Text style={{color, fontWeight: numberSet.has(number) ? 'bold' : 100}}>{number}</Text>
-                </View>
+                    <Text
+                        style={{
+                            color,
+                            fontWeight: numberSet.has(number) ? "bold" : 100,
+                        }}
+                    >
+                        {number}
+                    </Text>
+                </View>,
             );
         }
         const row = (
-            <View
-                style={{ flexDirection: "row" }}
-                key={rowIndex}
-            >
+            <View style={{ flexDirection: "row" }} key={rowIndex}>
                 {elements}
             </View>
         );
         rows.push(row);
     }
 
-    return (
-        <View style={styles.container}>
-            {rows}
-        </View>
-    )
+    return <View style={styles.container}>{rows}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -68,5 +68,5 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderWidth: 1,
-    }
+    },
 });

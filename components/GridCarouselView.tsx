@@ -6,7 +6,7 @@ import { useTheme } from "react-native-paper";
 
 type GridCarouselViewProps = {
     numberToCount: Map<number, number>;
-}
+};
 
 export default function GridCarouselView(props: GridCarouselViewProps) {
     const [pageNumber, setPageNumber] = useState(0);
@@ -18,21 +18,44 @@ export default function GridCarouselView(props: GridCarouselViewProps) {
     const minNumber = Math.min(0, ...numberSet);
     const minPageNumber = Math.floor(minNumber / 100);
 
-    const theme = useTheme()
+    const theme = useTheme();
 
-    const leftColor = pageNumber === minPageNumber ? theme.colors.onSurfaceDisabled : theme.colors.onSurface;
-    const rightColor = pageNumber === maxPageNumber ? theme.colors.onSurfaceDisabled : theme.colors.onSurface;
+    const leftColor =
+        pageNumber === minPageNumber
+            ? theme.colors.onSurfaceDisabled
+            : theme.colors.onSurface;
+    const rightColor =
+        pageNumber === maxPageNumber
+            ? theme.colors.onSurfaceDisabled
+            : theme.colors.onSurface;
     const arrowSize = 36;
 
     return (
-        <View style={{flexDirection: "row", alignItems: "center"}}>
-            <TouchableHighlight onPress={() => setPageNumber(pageNumber - 1)} disabled={pageNumber === minPageNumber}>
-                <AntDesign name="left" color={leftColor} size={arrowSize}></AntDesign>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableHighlight
+                onPress={() => setPageNumber(pageNumber - 1)}
+                disabled={pageNumber === minPageNumber}
+            >
+                <AntDesign
+                    name="left"
+                    color={leftColor}
+                    size={arrowSize}
+                ></AntDesign>
             </TouchableHighlight>
-            <GridView numberToCount={props.numberToCount} startNumber={100 * pageNumber} />
-            <TouchableHighlight onPress={() => setPageNumber(pageNumber + 1)} disabled={pageNumber === maxPageNumber}>
-                <AntDesign name="right" color={rightColor} size={arrowSize}></AntDesign>
+            <GridView
+                numberToCount={props.numberToCount}
+                startNumber={100 * pageNumber}
+            />
+            <TouchableHighlight
+                onPress={() => setPageNumber(pageNumber + 1)}
+                disabled={pageNumber === maxPageNumber}
+            >
+                <AntDesign
+                    name="right"
+                    color={rightColor}
+                    size={arrowSize}
+                ></AntDesign>
             </TouchableHighlight>
         </View>
-    )
+    );
 }
