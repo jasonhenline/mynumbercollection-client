@@ -15,9 +15,7 @@ export function getCardRarity(number: number): Rarity {
     return Rarity.Common;
   }
 
-  if (abs == 0) {
-    return Rarity.Trash;
-  } else if (abs > 0 && abs < 100) {
+  if (abs >= 0 && abs < 100) {
     return Rarity.Common;
   } else if (abs >= 100 && abs < 200) {
     return Rarity.Uncommon;
