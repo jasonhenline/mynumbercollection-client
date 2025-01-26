@@ -81,13 +81,11 @@ export function getGridColor(number: number): CardColor {
   const rarity = getCardRarity(number);
   const cardColor = cardBackgroundColor(rarity);
   const gridColor = gridBackgroundColor(rarity);
-  const negativeColor = negativeBackgroundColor(rarity);
 
   // Invert card colors for negative numbers
   if (number >= 0) {
     return { background: gridColor, foreground: "#ffffff" };
   } else {
-    return { background: negativeColor, foreground: "#ffffff" };
-    // return { background: "#000000", foreground: cardColor };
+    return { background: "#000000", foreground: cardColor };
   }
 }
