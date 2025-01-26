@@ -10,14 +10,18 @@ type DataContextType = {
     isLoading: boolean;
     error: string | null;
     refreshData: () => Promise<void>;
-}
+};
 
-const DataContext = createContext<DataContextType|undefined>(undefined);
+const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-    const [numberToCountMap, setNumberToCountMap] = useState<Map<number, number>>(new Map());
+    const [numberToCountMap, setNumberToCountMap] = useState<
+        Map<number, number>
+    >(new Map());
     const [grants, setGrants] = useState<Grant[]>([]);
-    const [nextGrantTimestamp, setNextGrantTimestamp] = useState<Date>(new Date());
+    const [nextGrantTimestamp, setNextGrantTimestamp] = useState<Date>(
+        new Date(),
+    );
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +40,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             const grants = await apiClient.fetchGrants(userId);
             setGrants(grants);
 
-            const nextGrantTimestamp = await apiClient.fetchNextGrantTimestamp(userId);
+            const nextGrantTimestamp =
+                await apiClient.fetchNextGrantTimestamp(userId);
             setNextGrantTimestamp(nextGrantTimestamp);
         } catch (err) {
             setError("Failed to fetch data");
@@ -48,7 +53,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     const refreshData = async () => {
         await fetchData();
-    }
+    };
 
     useEffect(() => {
         fetchData();
@@ -56,11 +61,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <DataContext.Provider
-            value={{ numberToCountMap, grants, nextGrantTimestamp, isLoading, error, refreshData }}
+            value={{
+                numberToCountMap,
+                grants,
+                nextGrantTimestamp,
+                isLoading,
+                error,
+                refreshData,
+            }}
         >
             {children}
         </DataContext.Provider>
-    )
+    );
 }
 
 export const useData = () => {
@@ -69,4 +81,4 @@ export const useData = () => {
         throw new Error("useData must be used within a DataProvider");
     }
     return context;
-}
+};

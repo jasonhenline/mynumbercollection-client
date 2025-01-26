@@ -5,17 +5,17 @@ import { ActivityIndicator, Button, Text } from "react-native-paper";
 
 type GrantButtonViewProps = {
     onGetNewNumbersPress: () => void;
-}
+};
 
 export default function GrantButtonView(props: GrantButtonViewProps) {
     const [showGrantButton, setShowGrantButton] = useState<boolean>(false);
-    const [countdown, setCountdown] = useState<string|null>(null);
+    const [countdown, setCountdown] = useState<string | null>(null);
     const [localIsLoading, setLocalIsLoading] = useState<boolean>(true);
 
     const { isLoading, nextGrantTimestamp } = useData();
 
     useEffect(() => {
-        let interval: ReturnType<typeof setInterval>|null = null;
+        let interval: ReturnType<typeof setInterval> | null = null;
         const run = () => {
             const now = new Date();
             const timeDifference = nextGrantTimestamp.getTime() - now.getTime();
@@ -32,11 +32,11 @@ export default function GrantButtonView(props: GrantButtonViewProps) {
                 setCountdown(`${hours}h ${minutes}m ${seconds}s`);
             }
             setLocalIsLoading(false);
-        }
+        };
 
         interval = setInterval(run, 1000);
         run();
-    }, [nextGrantTimestamp])
+    }, [nextGrantTimestamp]);
 
     if (isLoading || localIsLoading) {
         return (
@@ -47,12 +47,16 @@ export default function GrantButtonView(props: GrantButtonViewProps) {
     }
 
     if (showGrantButton) {
-        return <Button mode="contained" onPress={props.onGetNewNumbersPress}>Get New Numbers</Button>
+        return (
+            <Button mode="contained" onPress={props.onGetNewNumbersPress}>
+                Get New Numbers
+            </Button>
+        );
     }
 
     return (
         <Text variant="titleMedium">New numbers available in: {countdown}</Text>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

@@ -34,12 +34,16 @@ class ApiClient {
     }
 
     async fetchNextGrantTimestamp(userId: string): Promise<Date> {
-        const nextGrantTimestampJson = await this.fetchJson(`/${userId}/next-grant`);
+        const nextGrantTimestampJson = await this.fetchJson(
+            `/${userId}/next-grant`,
+        );
         return new Date(nextGrantTimestampJson["next_grant_time"]);
     }
 
     async fetchNewNumbers(userId: string): Promise<Map<number, number>> {
-        const newNumbersJson = await this.fetchJson(`/${userId}/add-numbers`, {method: "POST"});
+        const newNumbersJson = await this.fetchJson(`/${userId}/add-numbers`, {
+            method: "POST",
+        });
         const numberToNewMap = new Map<number, number>();
         for (const numberRecord of newNumbersJson["numbers"]) {
             const number = numberRecord["number"];
@@ -53,7 +57,7 @@ class ApiClient {
         const headers = {
             ...options.headers,
             Authorization: `Bearer ${this.accessToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         };
 
         const response = await fetch(`${BASE_URL}${endpoint}`, {

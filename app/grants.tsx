@@ -8,11 +8,11 @@ export default function Grants() {
     const { grants, isLoading } = useData();
 
     if (isLoading) {
-      return (
-          <View style={styles.container}>
-              <ActivityIndicator size="large" style={{paddingTop: 32}} />
-          </View>
-      )
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" style={{ paddingTop: 32 }} />
+            </View>
+        );
     }
 
     function getGrantString(grant: Grant) {
@@ -28,46 +28,73 @@ export default function Grants() {
 
     const [page, setPage] = useState(0);
 
-    const minimumAllowedRows = 3
+    const minimumAllowedRows = 3;
     const [itemsPerPage, setItemsPerPage] = useState(minimumAllowedRows);
 
-    const sortedGrants = [...grants].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    const sortedGrants = [...grants].sort(
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
+    );
 
-    const [items] = useState(sortedGrants.map(grant => { return {key: grant.timestamp.toISOString(), time: grant.timestamp.toLocaleString(), numbers: getGrantString(grant)}}));
+    const [items] = useState(
+        sortedGrants.map((grant) => {
+            return {
+                key: grant.timestamp.toISOString(),
+                time: grant.timestamp.toLocaleString(),
+                numbers: getGrantString(grant),
+            };
+        }),
+    );
 
     const from = page * itemsPerPage;
     const to = Math.min((page + 1) * itemsPerPage, items.length);
 
     useEffect(() => {
-      setPage(0)
+        setPage(0);
     }, [itemsPerPage]);
 
     return (
-        <DataTable style={{flexGrow: 1, maxHeight: '100%'}} onLayout={(event) => {
-            const { height } = event.nativeEvent.layout;
+        <DataTable
+            style={{ flexGrow: 1, maxHeight: "100%" }}
+            onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
 
-            // During tab transitions, the height briefly flickers to zero which can set bad state.
-            // We just ignore zero-height layouts to sidestep this issue.
-            if (height <= 0) {
-                return
-            }
-            // This calculation is only safe because every row (including the header and footer)
-            // is constrained to a height of 48. We subtract 2 rows to account for the header and footer.
-            const calculatedRowsPerPage = Math.floor(height / styles.constrainHeight.maxHeight) - 2
+                // During tab transitions, the height briefly flickers to zero which can set bad state.
+                // We just ignore zero-height layouts to sidestep this issue.
+                if (height <= 0) {
+                    return;
+                }
+                // This calculation is only safe because every row (including the header and footer)
+                // is constrained to a height of 48. We subtract 2 rows to account for the header and footer.
+                const calculatedRowsPerPage =
+                    Math.floor(height / styles.constrainHeight.maxHeight) - 2;
 
-            // We take the max of the calculation and minimumAllowedRows as a failsafe against edge cases
-            // with vanishingly small screens.
-            setItemsPerPage(Math.max(minimumAllowedRows, calculatedRowsPerPage))
-        }}>
+                // We take the max of the calculation and minimumAllowedRows as a failsafe against edge cases
+                // with vanishingly small screens.
+                setItemsPerPage(
+                    Math.max(minimumAllowedRows, calculatedRowsPerPage),
+                );
+            }}
+        >
             <DataTable.Header style={styles.constrainHeight}>
-                <DataTable.Title style={styles.dateColumn} sortDirection={"descending"}>Time</DataTable.Title>
-                <DataTable.Title style={styles.numberColumn}>Numbers</DataTable.Title>
+                <DataTable.Title
+                    style={styles.dateColumn}
+                    sortDirection={"descending"}
+                >
+                    Time
+                </DataTable.Title>
+                <DataTable.Title style={styles.numberColumn}>
+                    Numbers
+                </DataTable.Title>
             </DataTable.Header>
 
             {items.slice(from, to).map((item) => (
                 <DataTable.Row key={item.key} style={styles.constrainHeight}>
-                    <DataTable.Cell style={styles.dateColumn}><Text numberOfLines={2}>{item.time}</Text></DataTable.Cell>
-                    <DataTable.Cell style={styles.numberColumn}><Text numberOfLines={2}>{item.numbers}</Text></DataTable.Cell>
+                    <DataTable.Cell style={styles.dateColumn}>
+                        <Text numberOfLines={2}>{item.time}</Text>
+                    </DataTable.Cell>
+                    <DataTable.Cell style={styles.numberColumn}>
+                        <Text numberOfLines={2}>{item.numbers}</Text>
+                    </DataTable.Cell>
                 </DataTable.Row>
             ))}
 
@@ -84,19 +111,19 @@ export default function Grants() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  dateColumn: {
-    flexShrink: 2,
-  },
-  numberColumn: {
-    flexShrink: 0,
-    flexGrow: 2,
-    paddingLeft: 16,
-    minWidth: 150,
-  },
-  constrainHeight: {
-    maxHeight: 48
-  }
+    container: {
+        flex: 1,
+    },
+    dateColumn: {
+        flexShrink: 2,
+    },
+    numberColumn: {
+        flexShrink: 0,
+        flexGrow: 2,
+        paddingLeft: 16,
+        minWidth: 150,
+    },
+    constrainHeight: {
+        maxHeight: 48,
+    },
 });
