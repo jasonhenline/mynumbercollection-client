@@ -5,7 +5,7 @@ import { useAuthenticator } from "@aws-amplify/ui-react-native";
 import { useEffect, useState } from "react";
 import { useData } from "@/DataContext";
 import GrantButtonView from "@/components/GrantButtonView";
-import NewGrantCarouselView from "@/components/NewGrantCarouselView";
+import NumberCarouselView from "@/components/NumberCarouselView";
 import createApiClient from "@/clients/apiClient";
 import {
     ActivityIndicator,
@@ -15,6 +15,11 @@ import {
 } from "react-native-paper";
 import versionInfo from "@/data/version.json";
 import { CustomDarkTheme } from "@/styles/customtheme";
+
+export interface CardEntry {
+    number: number;
+    isNew: boolean;
+}
 
 export default function Index() {
     const { signOut } = useAuthenticator();
@@ -75,10 +80,13 @@ export default function Index() {
         return <PaperProvider theme={darkTheme}>{element}</PaperProvider>;
     };
 
-    const [isNewGrantView, setIsNewGrantView] = useState<boolean>(false);
-    const [newNumbers, setNewNumbers] = useState<
-        { number: number; isNew: boolean }[]
-    >([]);
+    const [isShowNumberView, setShowNumberView] = useState<boolean>(false);
+    const [numbersToDisplay, setNewNumbers] = useState<CardEntry[]>([]);
+    const [showNumberDisplayTitle, setShowNumberDisplayTitle] =
+        useState<string>("Your new numbers");
+    const [showNumberStartingIndex, setShowNumberStartingIndex] =
+        useState<number>(0);
+
     const { numberToCountMap, isLoading, refreshData } = useData();
 
     if (isLoading) {
@@ -89,47 +97,85 @@ export default function Index() {
         );
     }
 
-    if (isNewGrantView) {
-        if (newNumbers.length === 0) {
+    if (isShowNumberView) {
+        if (numbersToDisplay.length === 0) {
             return wrapInDarkThemeOverride(
                 <View style={styles.container}>
                     <Text style={darkTheme.fonts.headlineSmall}>
-                        No new numbers available
+                        No numbers to show
                     </Text>
+                    <Button
+                        mode="contained"
+                        onPress={() => setShowNumberView(false)}
+                    >
+                        Back to Grid
+                    </Button>
                 </View>,
             );
         }
 
         return wrapInDarkThemeOverride(
             <View style={styles.container}>
-                <NewGrantCarouselView
-                    newNumbers={newNumbers}
-                    onBackToGrid={() => setIsNewGrantView(false)}
+                <NumberCarouselView
+                    numbersToDisplay={numbersToDisplay}
+                    carouselTitle={showNumberDisplayTitle}
+                    startingIndex={showNumberStartingIndex}
+                    onBackToGrid={() => setShowNumberView(false)}
                 />
             </View>,
         );
+    }
+
+    function setupAndShowNumberDisplayState(
+        numbersToShow: CardEntry[],
+        showNumberDisplayTitle: string,
+        showNumberStartingIndex: number = 0,
+    ) {
+        setNewNumbers(numbersToShow);
+        setShowNumberDisplayTitle(showNumberDisplayTitle);
+        setShowNumberStartingIndex(showNumberStartingIndex);
+        setShowNumberView(true);
     }
 
     async function handleGetNewNumbersPress() {
         const oldNumbers = new Set<number>([...numberToCountMap.keys()]);
         const apiClient = await createApiClient();
         const fetchedNumbers = await apiClient.fetchNewNumbers(user.userId);
-        const newNumbersValue: { number: number; isNew: boolean }[] = [];
+        const newNumbersValue: CardEntry[] = [];
         for (const [n, c] of fetchedNumbers.entries()) {
             const isNew = !oldNumbers.has(n);
             for (let i = 0; i < c; i++) {
                 newNumbersValue.push({ number: n, isNew });
             }
         }
-        setNewNumbers(newNumbersValue);
         await refreshData();
-        setIsNewGrantView(true);
+        const sortedNumbers = newNumbersValue.sort(
+            (a, b) => Math.abs(a.number) - Math.abs(b.number),
+        );
+
+        setupAndShowNumberDisplayState(sortedNumbers, "Your new numbers");
     }
+
+    const triggerCollectionViewFromStartingCard = (card: number) => {
+        const allCards = [
+            ...numberToCountMap.keys().map((key) => {
+                return { number: key, isNew: false };
+            }),
+        ];
+
+        const startingIndex = allCards.findIndex(({ number }: CardEntry) => {
+            return number === card;
+        });
+        setupAndShowNumberDisplayState(allCards, "", startingIndex);
+    };
 
     return wrapInDarkThemeOverride(
         <View style={styles.container}>
             <Text variant="headlineSmall">Your Number Collection</Text>
-            <GridCarouselView numberToCount={numberToCountMap} />
+            <GridCarouselView
+                numberToCount={numberToCountMap}
+                pressedCardInGrid={triggerCollectionViewFromStartingCard}
+            />
             <GrantButtonView onGetNewNumbersPress={handleGetNewNumbersPress} />
             {isUpdateAvailable && (
                 <Text variant="titleMedium">
