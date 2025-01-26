@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { View } from "react-native";
+import CardView from "./CardView";
 import { AntDesign } from "@expo/vector-icons";
 import { Button, Text, TouchableRipple, useTheme } from "react-native-paper";
-import { getCardColor } from "@/styles/getCardColor";
 
 type NewGrantCarouselViewProps = {
     newNumbers: {number: number, isNew: boolean}[];
@@ -24,13 +24,6 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
     const rightColor = cardIndex === sortedNumbers.length - 1 ? theme.colors.onSurfaceDisabled : theme.colors.onSurface;
     const arrowSize = 36;
 
-    // The built in react-native-paper fonts do not have a font large enough for this element, so we've gone a bit custom here.
-    const extraLargeFontStyles = {
-        ...theme.fonts.displayLarge,
-        fontSize: 100,
-        lineHeight: 120,
-    }
-
     return (
         <View style={{alignItems: "center", gap: 20}}>
             <Text variant="headlineLarge">Your New Numbers</Text>
@@ -38,23 +31,7 @@ export default function NewGrantCarouselView(props: NewGrantCarouselViewProps) {
                 <TouchableRipple onPress={() => setCardIndex(cardIndex - 1)} disabled={cardIndex === 0}>
                     <AntDesign name="left" color={leftColor} size={arrowSize}></AntDesign>
                 </TouchableRipple>
-                <View style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 180,
-                    height: 290,
-                    borderWidth: 1,
-                    borderColor: theme.colors.onSurface,
-                    borderRadius: 20,
-                    backgroundColor: getCardColor(sortedNumbers[cardIndex]),
-                }}>
-                    <Text style={extraLargeFontStyles}>{sortedNumbers[cardIndex]}</Text>
-                    {
-                        numberToNewMap.get(sortedNumbers[cardIndex]) &&
-                            <Text variant="headlineSmall">NEW</Text>
-                    }
-                </View>
+                <CardView number={sortedNumbers[cardIndex]} isNew={!!numberToNewMap.get(sortedNumbers[cardIndex])}></CardView>
                 <TouchableRipple onPress={() => setCardIndex(cardIndex + 1)} disabled={cardIndex === sortedNumbers.length - 1}>
                     <AntDesign name="right" color={rightColor} size={arrowSize}></AntDesign>
                 </TouchableRipple>

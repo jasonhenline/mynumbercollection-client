@@ -1,4 +1,4 @@
-import { getCardColor } from "@/styles/getCardColor";
+import {getCardColor, getGridColor} from '@/styles/getCardColor';
 import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 type GridViewProps = {
@@ -15,8 +15,9 @@ export default function GridView(props: GridViewProps) {
         if (!numberSet.has(number)) {
             return {backgroundColor: "#bbb", color: "gray"};
         }
-        const backgroundColor = getCardColor(number);
-        return {backgroundColor, color: "white"};
+        // Get the colors for this number from its rarity
+        const {background, foreground} = getGridColor(number);
+        return {backgroundColor: background, color: foreground};
     }
 
     const rows = [];
@@ -33,7 +34,7 @@ export default function GridView(props: GridViewProps) {
                         backgroundColor,
                     }}
                 >
-                    <Text style={{color}}>{number}</Text>
+                    <Text style={{color, fontWeight: numberSet.has(number) ? 'bold' : 100}}>{number}</Text>
                 </View>
             );
         }
