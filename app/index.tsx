@@ -7,8 +7,9 @@ import { useData } from "@/DataContext";
 import GrantButtonView from "@/components/GrantButtonView";
 import NewGrantCarouselView from "@/components/NewGrantCarouselView";
 import createApiClient from "@/clients/apiClient";
-import { ActivityIndicator, Button, MD3DarkTheme, PaperProvider, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Button, PaperProvider, Text } from "react-native-paper";
 import versionInfo from "@/data/version.json";
+import { CustomDarkTheme } from "@/styles/customtheme";
 
 export default function Index() {
   const { signOut } = useAuthenticator();
@@ -58,7 +59,7 @@ export default function Index() {
   // The landing page intentionally and explicitly uses the "dark" theme for contrast with the
   // other pages. This means that it is not dynamically styled based on the users dark / light
   // color preference.
-  const darkTheme = MD3DarkTheme
+  const darkTheme = CustomDarkTheme
   const styles = getStyles(darkTheme.colors.surface)
 
   /** 
