@@ -117,7 +117,7 @@ export default function CardView(props: CardViewProps) {
                             style={iconTextStyle}
                             accessibilityLabel="Prime Number"
                         >
-                            ◊
+                            P
                         </Text>
                     </View>
                 )}
