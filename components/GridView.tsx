@@ -4,6 +4,7 @@ import { Text, TouchableRipple } from "react-native-paper";
 type GridViewProps = {
     numberToCount: Map<number, number>;
     startNumber: number;
+    /** Only invoked if the card pressed is one that has been pulled */
     pressedCardInGrid: (card: number) => void;
 };
 
@@ -27,32 +28,40 @@ export default function GridView(props: GridViewProps) {
         for (let colIndex = 0; colIndex < 10; colIndex++) {
             const number = props.startNumber + rowIndex * 10 + colIndex;
             const { backgroundColor, color } = getColors(number);
-            elements.push(
-                <TouchableRipple
+            const numberView = (
+                <View
                     key={colIndex}
-                    onPress={() => {
-                        props.pressedCardInGrid(number);
+                    style={{
+                        ...styles.cell,
+                        backgroundColor,
                     }}
                 >
-                    <View
+                    <Text
                         style={{
-                            ...styles.cell,
-                            backgroundColor,
+                            color,
+                            fontWeight: numberSet.has(number) ? "bold" : 100,
+                            cursor: numberSet.has(number)
+                                ? undefined
+                                : "default",
                         }}
                     >
-                        <Text
-                            style={{
-                                color,
-                                fontWeight: numberSet.has(number)
-                                    ? "bold"
-                                    : 100,
-                            }}
-                        >
-                            {number}
-                        </Text>
-                    </View>
-                </TouchableRipple>,
+                        {number}
+                    </Text>
+                </View>
             );
+
+            if (numberSet.has(number)) {
+                elements.push(
+                    <TouchableRipple
+                        key={colIndex}
+                        onPress={() => props.pressedCardInGrid(number)}
+                    >
+                        {numberView}
+                    </TouchableRipple>,
+                );
+            } else {
+                elements.push(numberView);
+            }
         }
         const row = (
             <View style={{ flexDirection: "row" }} key={rowIndex}>
