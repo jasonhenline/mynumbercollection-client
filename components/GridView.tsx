@@ -15,7 +15,7 @@ export default function GridView(props: GridViewProps) {
     // the existing visual identity of the app.
     function getColors(number: number) {
         if (!numberSet.has(number)) {
-            return { backgroundColor: "#bbb", color: "#333" };
+            return { backgroundColor: "#bbb", color: "#444" };
         }
         // Get the colors for this number from its rarity
         const { background, foreground } = getGridColor(number);
@@ -39,7 +39,7 @@ export default function GridView(props: GridViewProps) {
                     <Text
                         style={{
                             color,
-                            fontWeight: numberSet.has(number) ? "bold" : 100,
+                            fontWeight: "bold",
                             cursor: numberSet.has(number)
                                 ? undefined
                                 : "default",
