@@ -31,12 +31,6 @@ export default function GridCarouselView(props: GridCarouselViewProps) {
             : theme.colors.onSurface;
     const arrowSize = 36;
 
-    const pressedCardInGrid = (card: number) => {
-        if (numberSet.has(card)) {
-            props.pressedCardInGrid(card);
-        }
-    };
-
     return (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableHighlight
@@ -52,7 +46,7 @@ export default function GridCarouselView(props: GridCarouselViewProps) {
             <GridView
                 numberToCount={props.numberToCount}
                 startNumber={100 * pageNumber}
-                pressedCardInGrid={pressedCardInGrid}
+                pressedCardInGrid={props.pressedCardInGrid}
             />
             <TouchableHighlight
                 onPress={() => setPageNumber(pageNumber + 1)}
