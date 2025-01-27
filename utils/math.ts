@@ -1,11 +1,16 @@
 export function isPrime(number: number): boolean {
-    const root = Math.sqrt(number);
-    const absNumber = Math.abs(number);
-    if (absNumber < 2) {
+    if (number <= 1) {
         return false;
     }
-    for (let divisor = 2; divisor <= root; divisor++) {
-        if (absNumber % divisor == 0) {
+    if (number == 2) {
+        return true;
+    }
+    if (number % 2 == 0) {
+        return false;
+    }
+    const root = Math.sqrt(number);
+    for (let divisor = 3; divisor <= root; divisor += 2) {
+        if (number % divisor == 0) {
             return false;
         }
     }
