@@ -82,6 +82,83 @@ const numberToFlavorText = new Map<number, string>([
         20,
         "Score! Two tens rolled into one. Whether you’re counting fingers, toes, or years, 20 is a milestone.",
     ],
+    [
+        21,
+        "Lucky blackjack! The life of the party and a multiple of 3 and 7. It’s got charisma and math cred.",
+    ],
+    [
+        22,
+        "Double trouble—or double fun? A palindrome that’s even, balanced, and twice as nice.",
+    ],
+    [
+        23,
+        "Michael Jordan’s number, a prime, and the most iconic two-three combo since peanut butter and jelly.",
+    ],
+    [
+        24,
+        "24/7 versatility! Divisible by 1, 2, 3, 4, 6, 8, and 12. This number doesn’t take a day off.",
+    ],
+    [
+        25,
+        "Square up! Five times five equals twenty-five. The perfect square with an eye on the prize.",
+    ],
+    [
+        26,
+        "Two baker’s dozens minus a little frosting. Not a prime, but still in its prime. It’s just vibin’.",
+    ],
+    [
+        27,
+        "Cubed chaos! Three times three times three. This number’s got layers—like an onion or a parfait.",
+    ],
+    [
+        28,
+        "Another perfect number! Divisors add up to itself (1 + 2 + 4 + 7 + 14 = 28). It’s mathematically flawless.",
+    ],
+    [
+        29,
+        "Prime and proud! 29 is independent, indivisible, and always marching to its own rhythm.",
+    ],
+    [
+        30,
+        "Dirty thirty? More like dazzling thirty! A multiple of 2, 3, and 5, it’s the ultimate party organizer.",
+    ],
+    [
+        31,
+        "Prime and thriving! A number that says, ‘Who needs factors when I’ve got personality?",
+    ],
+    [
+        32,
+        "Power up! Two to the fifth power (2×2×2×2×2). It’s exponential excitement packed into a tidy number.",
+    ],
+    [
+        33,
+        "Double threes, twice the charm! A multiple of 3 and 11, it’s basically a math matchmaker.",
+    ],
+    [
+        34,
+        "A Fibonacci favorite! Found in the famous sequence, it’s got growth potential and good vibes.",
+    ],
+    [
+        35,
+        "Triple seven’s cousin. A product of 5×7, it’s keeping things odd yet harmonious.",
+    ],
+    [
+        36,
+        "Squared and sensational! Six times six equals thirty-six. A perfect square, perfect symmetry.",
+    ],
+    [37, "Strong, independent, and totally unique—37 does its own thing."],
+    [
+        38,
+        "A little shy of forty but still great! Even, reliable, and the sum of 19 + 19. Double your 19 fun!",
+    ],
+    [
+        39,
+        "The first multiple of 3 to flirt with forty. Prime? Nope. Fun? Absolutely. A 3 and 13 combo!",
+    ],
+    [
+        40,
+        "Forty and fabulous! A multiple of 2, 4, 5, and 10, it’s a master of division and milestones.",
+    ],
     [42, "Don't Panic."],
     [69, "Nice."],
     [86, "Eighty-six that number chef! Yes chef!"],
