@@ -1,5 +1,5 @@
 import { TextStyle, View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text, Tooltip, useTheme } from "react-native-paper";
 import { getCardColor } from "@/styles/getCardColor";
 import { StyleProp } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheet";
 import { ViewStyle } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheetTypes";
@@ -113,12 +113,14 @@ export default function CardView(props: CardViewProps) {
                             backgroundColor: "#006600",
                         }}
                     >
-                        <Text
-                            style={iconTextStyle}
-                            accessibilityLabel="Prime Number"
-                        >
-                            P
-                        </Text>
+                        <Tooltip title="Prime">
+                            <Text
+                                style={iconTextStyle}
+                                accessibilityLabel="Prime Number"
+                            >
+                                P
+                            </Text>
+                        </Tooltip>
                     </View>
                 )}
                 {square && (
@@ -128,12 +130,14 @@ export default function CardView(props: CardViewProps) {
                             backgroundColor: "#660000",
                         }}
                     >
-                        <Text
-                            style={iconTextStyle}
-                            accessibilityLabel="Square Number"
-                        >
-                            ▢
-                        </Text>
+                        <Tooltip title="Square">
+                            <Text
+                                style={iconTextStyle}
+                                accessibilityLabel="Square Number"
+                            >
+                                ▢
+                            </Text>
+                        </Tooltip>
                     </View>
                 )}
             </View>
