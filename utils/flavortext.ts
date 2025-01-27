@@ -82,7 +82,21 @@ const numberToFlavorText = new Map<number, string>([
         20,
         "Score! Two tens rolled into one. Whether you’re counting fingers, toes, or years, 20 is a milestone.",
     ],
+    [42, "Don't Panic."],
     [69, "Nice."],
+    [86, "Eighty-six that number chef! Yes chef!"],
+    [
+        88,
+        "If my calculations are correct, when this baby hits eighty-eight... you're gonna see some serious stuff.",
+    ],
+    [101, "Intro to Number Plucking."],
+    [127, "The number is coming from... inside the house?"],
+    [301, "See flavor text 302."],
+    [302, "See flavor text 301."],
+    [314, "...15926535..."],
+    [359, "This game has almost come full circle."],
+    [404, "Flavor text not found."],
+    [418, "I'm a teapot."],
 ]);
 
 export function getFlavorText(number: number): string {
