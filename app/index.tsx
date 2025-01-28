@@ -10,7 +10,6 @@ import createApiClient from "@/clients/apiClient";
 import {
     ActivityIndicator,
     Button,
-    PaperProvider,
     ThemeProvider as PaperThemeOnlyProvider,
     Text,
 } from "react-native-paper";
@@ -91,6 +90,7 @@ export default function Index() {
         useState<string>("Your new numbers");
     const [showNumberStartingIndex, setShowNumberStartingIndex] =
         useState<number>(0);
+    const [startingNumberGridPage, setStartingNumberGridPage] = useState(0);
 
     const { numberToCountMap, isLoading, refreshData } = useData();
 
@@ -125,7 +125,10 @@ export default function Index() {
                     numbersToDisplay={numbersToDisplay}
                     carouselTitle={showNumberDisplayTitle}
                     startingIndex={showNumberStartingIndex}
-                    onBackToGrid={() => setShowNumberView(false)}
+                    onBackToGrid={(number) => {
+                        setStartingNumberGridPage(Math.floor(number / 100));
+                        setShowNumberView(false);
+                    }}
                 />
             </View>,
         );
@@ -177,6 +180,7 @@ export default function Index() {
             <Text variant="headlineSmall">Your Number Collection</Text>
             <GridCarouselView
                 numberToCount={numberToCountMap}
+                startingPageNumber={startingNumberGridPage}
                 pressedCardInGrid={triggerCollectionViewFromStartingCard}
             />
             <GrantButtonView onGetNewNumbersPress={handleGetNewNumbersPress} />

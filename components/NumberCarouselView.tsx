@@ -9,7 +9,7 @@ type NumberCarouselViewProps = {
     numbersToDisplay: CardEntry[];
     carouselTitle: string;
     startingIndex?: number;
-    onBackToGrid: () => void;
+    onBackToGrid: (currentNumber: number) => void;
 };
 
 export default function NumberCarouselView(props: NumberCarouselViewProps) {
@@ -80,7 +80,12 @@ export default function NumberCarouselView(props: NumberCarouselViewProps) {
                     {cardIndex + 1}/{props.numbersToDisplay.length}
                 </Text>
             )}
-            <Button mode="contained" onPress={props.onBackToGrid}>
+            <Button
+                mode="outlined"
+                onPress={() =>
+                    props.onBackToGrid(props.numbersToDisplay[cardIndex].number)
+                }
+            >
                 Back to Grid
             </Button>
         </View>
