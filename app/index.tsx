@@ -10,7 +10,7 @@ import createApiClient from "@/clients/apiClient";
 import {
     ActivityIndicator,
     Button,
-    PaperProvider,
+    ThemeProvider as PaperThemeOnlyProvider,
     Text,
 } from "react-native-paper";
 import versionInfo from "@/data/version.json";
@@ -77,7 +77,11 @@ export default function Index() {
     const wrapInDarkThemeOverride = (
         element: React.JSX.Element,
     ): React.JSX.Element => {
-        return <PaperProvider theme={darkTheme}>{element}</PaperProvider>;
+        return (
+            <PaperThemeOnlyProvider theme={darkTheme}>
+                {element}
+            </PaperThemeOnlyProvider>
+        );
     };
 
     const [isShowNumberView, setShowNumberView] = useState<boolean>(false);
@@ -86,6 +90,7 @@ export default function Index() {
         useState<string>("Your new numbers");
     const [showNumberStartingIndex, setShowNumberStartingIndex] =
         useState<number>(0);
+    const [startingNumberGridPage, setStartingNumberGridPage] = useState(0);
 
     const { numberToCountMap, isLoading, refreshData } = useData();
 
@@ -120,7 +125,10 @@ export default function Index() {
                     numbersToDisplay={numbersToDisplay}
                     carouselTitle={showNumberDisplayTitle}
                     startingIndex={showNumberStartingIndex}
-                    onBackToGrid={() => setShowNumberView(false)}
+                    onBackToGrid={(number) => {
+                        setStartingNumberGridPage(Math.floor(number / 100));
+                        setShowNumberView(false);
+                    }}
                 />
             </View>,
         );
@@ -172,6 +180,7 @@ export default function Index() {
             <Text variant="headlineSmall">Your Number Collection</Text>
             <GridCarouselView
                 numberToCount={numberToCountMap}
+                startingPageNumber={startingNumberGridPage}
                 pressedCardInGrid={triggerCollectionViewFromStartingCard}
             />
             <GrantButtonView onGetNewNumbersPress={handleGetNewNumbersPress} />

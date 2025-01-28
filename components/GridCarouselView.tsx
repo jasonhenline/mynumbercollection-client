@@ -6,11 +6,12 @@ import { useTheme } from "react-native-paper";
 
 type GridCarouselViewProps = {
     numberToCount: Map<number, number>;
+    startingPageNumber?: number;
     pressedCardInGrid: (card: number) => void;
 };
 
 export default function GridCarouselView(props: GridCarouselViewProps) {
-    const [pageNumber, setPageNumber] = useState(0);
+    const [pageNumber, setPageNumber] = useState(props.startingPageNumber ?? 0);
 
     const numberSet = new Set<number>(props.numberToCount.keys());
     const maxNumber = Math.max(0, ...numberSet);
