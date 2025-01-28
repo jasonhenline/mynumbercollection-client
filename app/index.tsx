@@ -11,6 +11,7 @@ import {
     ActivityIndicator,
     Button,
     PaperProvider,
+    ThemeProvider as PaperThemeOnlyProvider,
     Text,
 } from "react-native-paper";
 import versionInfo from "@/data/version.json";
@@ -77,7 +78,11 @@ export default function Index() {
     const wrapInDarkThemeOverride = (
         element: React.JSX.Element,
     ): React.JSX.Element => {
-        return <PaperProvider theme={darkTheme}>{element}</PaperProvider>;
+        return (
+            <PaperThemeOnlyProvider theme={darkTheme}>
+                {element}
+            </PaperThemeOnlyProvider>
+        );
     };
 
     const [isShowNumberView, setShowNumberView] = useState<boolean>(false);

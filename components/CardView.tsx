@@ -1,4 +1,4 @@
-import { TextStyle, View } from "react-native";
+import { StyleSheet, TextStyle, View } from "react-native";
 import { Text, Tooltip, useTheme } from "react-native-paper";
 import { getCardColor } from "@/styles/getCardColor";
 import { StyleProp } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheet";
@@ -20,54 +20,9 @@ export default function CardView(props: CardViewProps) {
     // Gradient from rarity color to white?
 
     // The built in react-native-paper fonts do not have a font large enough for this element, so we've gone a bit custom here.
-    const extraLargeFontStyles: StyleProp<TextStyle> = {
+    const extraLargeFontOverride: StyleProp<TextStyle> = {
         ...theme.fonts.displayLarge,
-        fontSize: 80,
-        // lineHeight: 120,
         color: foreground,
-        fontWeight: "900",
-    };
-
-    const boxStyle: StyleProp<ViewStyle> = {
-        borderColor: "#00000066",
-        backgroundColor: "#ffffff66",
-        borderTopColor: "#00000033",
-        borderTopWidth: 2,
-        borderLeftColor: "#00000033",
-        borderLeftWidth: 2,
-        borderBottomColor: "#ffffff33",
-        borderBottomWidth: 5,
-        borderRightColor: "#ffffff33",
-        borderRightWidth: 5,
-        width: "100%",
-        height: 200,
-        alignItems: "center",
-        justifyContent: "center",
-    };
-
-    const negativeStyleOverrides: StyleProp<ViewStyle> = {
-        backgroundColor: "transparent",
-        borderTopColor: "transparent",
-        borderLeftColor: "transparent",
-        borderBottomColor: "transparent",
-        borderRightColor: "transparent",
-    };
-
-    const iconStyle: StyleProp<ViewStyle> = {
-        borderRadius: "100%",
-        borderColor: "#00000099",
-        borderWidth: 1,
-        marginLeft: 8,
-        width: 16,
-        height: 16,
-    };
-
-    const iconTextStyle: StyleProp<TextStyle> = {
-        color: "#ffffff",
-        fontSize: 10,
-        fontWeight: "bold",
-        textAlign: "center",
-        lineHeight: 14,
     };
 
     const prime = isPrime(props.number);
@@ -76,78 +31,76 @@ export default function CardView(props: CardViewProps) {
     return (
         <View
             style={{
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 240,
-                height: 340,
-                borderWidth: 10,
+                ...styles.cardContainer,
                 borderColor: props.number < 0 ? "#00000066" : "#ffffff66",
-                borderRadius: 20,
                 backgroundColor: background,
             }}
         >
             <View
                 style={{
                     width: "100%",
-                    padding: 8,
                     flexDirection: "row",
                 }}
             >
                 <Text
                     style={{
-                        flex: 1,
                         ...theme.fonts.displaySmall,
-                        fontSize: 12,
-                        lineHeight: 16,
+                        ...styles.topLeftNumber,
                         color: props.number >= 0 ? "#000000" : "#ffffff",
-                        fontWeight: "bold",
                     }}
                 >
                     {props.number}
                 </Text>
                 {prime && (
-                    <View
-                        style={{
-                            ...iconStyle,
-                            backgroundColor: "#006600",
-                        }}
-                    >
-                        <Tooltip title="Prime">
+                    <Tooltip title="Prime">
+                        <View
+                            style={{
+                                ...styles.iconStyle,
+                                backgroundColor: "#006600",
+                            }}
+                        >
                             <Text
-                                style={iconTextStyle}
+                                style={styles.iconTextStyle}
                                 accessibilityLabel="Prime Number"
                             >
                                 P
                             </Text>
-                        </Tooltip>
-                    </View>
+                        </View>
+                    </Tooltip>
                 )}
                 {square && (
-                    <View
-                        style={{
-                            ...iconStyle,
-                            backgroundColor: "#660000",
-                        }}
-                    >
-                        <Tooltip title="Square">
+                    <Tooltip title="Square">
+                        <View
+                            style={{
+                                ...styles.iconStyle,
+                                backgroundColor: "#660000",
+                            }}
+                        >
                             <Text
-                                style={iconTextStyle}
+                                style={styles.iconTextStyle}
                                 accessibilityLabel="Square Number"
                             >
                                 ▢
                             </Text>
-                        </Tooltip>
-                    </View>
+                        </View>
+                    </Tooltip>
                 )}
             </View>
             <View
                 style={{
-                    ...boxStyle,
-                    ...(props.number < 0 ? negativeStyleOverrides : {}),
+                    ...styles.boxStyle,
+                    ...(props.number < 0 ? styles.negativeStyleOverrides : {}),
                 }}
             >
-                <Text style={extraLargeFontStyles}>{props.number}</Text>
+                <Text
+                    style={{
+                        ...extraLargeFontOverride,
+                        ...styles.extraLargeFontStyles,
+                        color: foreground,
+                    }}
+                >
+                    {props.number}
+                </Text>
             </View>
             <View
                 style={{
@@ -183,3 +136,65 @@ export default function CardView(props: CardViewProps) {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    extraLargeFontStyles: {
+        fontSize: 80,
+        // lineHeight: 120,
+        fontWeight: "900",
+    },
+    cardContainer: {
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 240,
+        height: 340,
+        borderWidth: 10,
+        borderRadius: 20,
+    },
+    boxStyle: {
+        borderColor: "#00000066",
+        backgroundColor: "#ffffff66",
+        borderTopColor: "#00000033",
+        borderTopWidth: 2,
+        borderLeftColor: "#00000033",
+        borderLeftWidth: 2,
+        borderBottomColor: "#ffffff33",
+        borderBottomWidth: 5,
+        borderRightColor: "#ffffff33",
+        borderRightWidth: 5,
+        width: "100%",
+        height: 200,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    negativeStyleOverrides: {
+        backgroundColor: "transparent",
+        borderTopColor: "transparent",
+        borderLeftColor: "transparent",
+        borderBottomColor: "transparent",
+        borderRightColor: "transparent",
+    },
+    iconStyle: {
+        borderRadius: "100%",
+        borderColor: "#00000099",
+        borderWidth: 1,
+        margin: 8,
+        width: 16,
+        height: 16,
+    },
+    iconTextStyle: {
+        color: "#ffffff",
+        fontSize: 10,
+        fontWeight: "bold",
+        textAlign: "center",
+        lineHeight: 14,
+    },
+    topLeftNumber: {
+        flex: 1,
+        fontSize: 12,
+        lineHeight: 16,
+        fontWeight: "bold",
+        padding: 8,
+    },
+});
