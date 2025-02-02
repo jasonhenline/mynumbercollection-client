@@ -111,6 +111,8 @@ export default function Index() {
     const [startingNumberGridPage, setStartingNumberGridPage] = useState(0);
     const [buildSuspenseInNumberCarousel, setBuildSuspenseInNumberCarousel] =
         useState(false);
+    const [showCopyIcon, setShowCopyIcon] = useState(false);
+
     const { numberToCountMap, isLoading, refreshData } = useData();
 
     if (isLoading) {
@@ -145,6 +147,7 @@ export default function Index() {
                     carouselTitle={showNumberDisplayTitle}
                     buildSuspense={buildSuspenseInNumberCarousel}
                     startingIndex={showNumberStartingIndex}
+                    showCopyIcon={showCopyIcon}
                     onBackToGrid={(number) => {
                         setStartingNumberGridPage(Math.floor(number / 100));
                         setShowNumberView(false);
@@ -159,16 +162,19 @@ export default function Index() {
         showNumberDisplayTitle,
         showNumberStartingIndex = 0,
         buildSuspense = false,
+        showCopyIcon = false,
     }: {
         numbersToShow: CardEntry[];
         showNumberDisplayTitle: string;
         showNumberStartingIndex?: number;
         buildSuspense?: boolean;
+        showCopyIcon?: boolean;
     }) {
         setBuildSuspenseInNumberCarousel(buildSuspense);
         setNewNumbers(numbersToShow);
         setShowNumberDisplayTitle(showNumberDisplayTitle);
         setShowNumberStartingIndex(showNumberStartingIndex);
+        setShowCopyIcon(showCopyIcon);
         setShowNumberView(true);
     }
 
@@ -196,6 +202,7 @@ export default function Index() {
             numbersToShow: sortedNumbers,
             showNumberDisplayTitle: "Your new numbers",
             buildSuspense: suspensefulDrops,
+            showCopyIcon: true,
         });
     }
 
@@ -212,6 +219,7 @@ export default function Index() {
             showNumberDisplayTitle: "",
             showNumberStartingIndex: startingIndex,
             buildSuspense: false,
+            showCopyIcon: false,
         });
     };
 

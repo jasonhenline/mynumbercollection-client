@@ -3,6 +3,8 @@ import { useData } from "@/DataContext";
 import { Grant } from "@/model/Grant";
 import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
+import CopyNumbers from "@/components/CopyNumbers";
+import { CardEntry } from ".";
 
 export default function Grants() {
     const { grants, isLoading } = useData();
@@ -26,6 +28,28 @@ export default function Grants() {
         return numbers.join(", ");
     }
 
+    function convertGrantToCardEntries(grant: Grant) {
+        const entries: CardEntry[] = [];
+        const grantsBeforeThisOne = grants.filter(
+            (otherGrant) => otherGrant.timestamp < grant.timestamp,
+        );
+        const numbersPulledBeforeThisGrant = new Set(
+            grantsBeforeThisOne.flatMap((prevGrant) => [
+                ...prevGrant.numberToCountMap.keys(),
+            ]),
+        );
+        for (const [number, count] of grant.numberToCountMap) {
+            for (let i = 0; i < count; i++) {
+                entries.push({
+                    number,
+                    isNew: !numbersPulledBeforeThisGrant.has(number),
+                });
+            }
+        }
+        entries.sort((a, b) => a.number - b.number);
+        return entries;
+    }
+
     const [page, setPage] = useState(0);
 
     const minimumAllowedRows = 3;
@@ -41,6 +65,7 @@ export default function Grants() {
                 key: grant.timestamp.toISOString(),
                 time: grant.timestamp.toLocaleString(),
                 numbers: getGrantString(grant),
+                entries: convertGrantToCardEntries(grant),
             };
         }),
     );
@@ -93,7 +118,12 @@ export default function Grants() {
                         <Text numberOfLines={2}>{item.time}</Text>
                     </DataTable.Cell>
                     <DataTable.Cell style={styles.numberColumn}>
-                        <Text numberOfLines={2}>{item.numbers}</Text>
+                        <View style={styles.numberCell}>
+                            <Text numberOfLines={2}>{item.numbers}</Text>
+                            <CopyNumbers
+                                numbersToCopy={item.entries}
+                            ></CopyNumbers>
+                        </View>
                     </DataTable.Cell>
                 </DataTable.Row>
             ))}
@@ -122,8 +152,14 @@ const styles = StyleSheet.create({
         flexGrow: 2,
         paddingLeft: 16,
         minWidth: 150,
+        flexDirection: "column",
+        alignItems: "flex-start",
     },
     constrainHeight: {
         maxHeight: 48,
+    },
+    numberCell: {
+        flexDirection: "row",
+        alignItems: "center",
     },
 });
