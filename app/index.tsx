@@ -10,11 +10,14 @@ import createApiClient from "@/clients/apiClient";
 import {
     ActivityIndicator,
     Button,
+    Modal,
     ThemeProvider as PaperThemeOnlyProvider,
     Text,
 } from "react-native-paper";
 import versionInfo from "@/data/version.json";
 import { CustomDarkTheme } from "@/styles/customtheme";
+import SettingsModal from "@/components/SettingsModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface CardEntry {
     number: number;
@@ -26,15 +29,26 @@ export default function Index() {
     const navigation = useNavigation();
     const { user } = useAuthenticator();
     const [isUpdateAvailable, setIsUpdateAvailable] = useState<boolean>(false);
-
+    const [showSettings, setShowSettings] = useState<boolean>(false);
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
                 <View
                     style={{
                         paddingRight: 10,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
                     }}
                 >
+                    <Button
+                        onPress={() =>
+                            setShowSettings((prevState) => !prevState)
+                        }
+                        mode="text"
+                    >
+                        Settings
+                    </Button>
                     <Button onPress={signOut} mode="outlined">
                         Sign out
                     </Button>
@@ -74,12 +88,16 @@ export default function Index() {
      * Wraps the given element in its own PaperProvider, which detaches it from the regular user
      * preference for theme color.
      */
-    const wrapInDarkThemeOverride = (
+    const wrapAsDefaultIndexView = (
         element: React.JSX.Element,
     ): React.JSX.Element => {
         return (
             <PaperThemeOnlyProvider theme={darkTheme}>
                 {element}
+                <SettingsModal
+                    visible={showSettings}
+                    onDismiss={() => setShowSettings(!showSettings)}
+                ></SettingsModal>
             </PaperThemeOnlyProvider>
         );
     };
@@ -91,11 +109,12 @@ export default function Index() {
     const [showNumberStartingIndex, setShowNumberStartingIndex] =
         useState<number>(0);
     const [startingNumberGridPage, setStartingNumberGridPage] = useState(0);
-
+    const [buildSuspenseInNumberCarousel, setBuildSuspenseInNumberCarousel] =
+        useState(false);
     const { numberToCountMap, isLoading, refreshData } = useData();
 
     if (isLoading) {
-        return wrapInDarkThemeOverride(
+        return wrapAsDefaultIndexView(
             <View style={styles.container}>
                 <ActivityIndicator size="large" />
             </View>,
@@ -104,7 +123,7 @@ export default function Index() {
 
     if (isShowNumberView) {
         if (numbersToDisplay.length === 0) {
-            return wrapInDarkThemeOverride(
+            return wrapAsDefaultIndexView(
                 <View style={styles.container}>
                     <Text style={darkTheme.fonts.headlineSmall}>
                         No numbers to show
@@ -119,11 +138,12 @@ export default function Index() {
             );
         }
 
-        return wrapInDarkThemeOverride(
+        return wrapAsDefaultIndexView(
             <View style={styles.container}>
                 <NumberCarouselView
                     numbersToDisplay={numbersToDisplay}
                     carouselTitle={showNumberDisplayTitle}
+                    buildSuspense={buildSuspenseInNumberCarousel}
                     startingIndex={showNumberStartingIndex}
                     onBackToGrid={(number) => {
                         setStartingNumberGridPage(Math.floor(number / 100));
@@ -134,11 +154,18 @@ export default function Index() {
         );
     }
 
-    function setupAndShowNumberDisplayState(
-        numbersToShow: CardEntry[],
-        showNumberDisplayTitle: string,
-        showNumberStartingIndex: number = 0,
-    ) {
+    function setupAndShowNumberDisplayState({
+        numbersToShow,
+        showNumberDisplayTitle,
+        showNumberStartingIndex = 0,
+        buildSuspense = false,
+    }: {
+        numbersToShow: CardEntry[];
+        showNumberDisplayTitle: string;
+        showNumberStartingIndex?: number;
+        buildSuspense?: boolean;
+    }) {
+        setBuildSuspenseInNumberCarousel(buildSuspense);
         setNewNumbers(numbersToShow);
         setShowNumberDisplayTitle(showNumberDisplayTitle);
         setShowNumberStartingIndex(showNumberStartingIndex);
@@ -161,7 +188,15 @@ export default function Index() {
             (a, b) => Math.abs(a.number) - Math.abs(b.number),
         );
 
-        setupAndShowNumberDisplayState(sortedNumbers, "Your new numbers");
+        // default to off (this will also be false if the value is null / unset)
+        const suspensefulDrops =
+            (await AsyncStorage.getItem("suspensefulDrops")) === "true";
+
+        setupAndShowNumberDisplayState({
+            numbersToShow: sortedNumbers,
+            showNumberDisplayTitle: "Your new numbers",
+            buildSuspense: suspensefulDrops,
+        });
     }
 
     const triggerCollectionViewFromStartingCard = (card: number) => {
@@ -172,10 +207,15 @@ export default function Index() {
         const startingIndex = allCards.findIndex(({ number }: CardEntry) => {
             return number === card;
         });
-        setupAndShowNumberDisplayState(allCards, "", startingIndex);
+        setupAndShowNumberDisplayState({
+            numbersToShow: allCards,
+            showNumberDisplayTitle: "",
+            showNumberStartingIndex: startingIndex,
+            buildSuspense: false,
+        });
     };
 
-    return wrapInDarkThemeOverride(
+    return wrapAsDefaultIndexView(
         <View style={styles.container}>
             <Text variant="headlineSmall">Your Number Collection</Text>
             <GridCarouselView

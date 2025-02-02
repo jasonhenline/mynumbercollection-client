@@ -2,13 +2,17 @@ import { StyleSheet, TextStyle, View } from "react-native";
 import { Text, Tooltip, useTheme } from "react-native-paper";
 import { getCardColor } from "@/styles/getCardColor";
 import { StyleProp } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheet";
-import { ViewStyle } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { isPrime, isSquare } from "@/utils/math";
 import { getFlavorText } from "@/utils/flavortext";
 
 type CardViewProps = {
     number: number;
     isNew: boolean;
+};
+
+export const CardDimensions = {
+    height: 340,
+    width: 240,
 };
 
 export default function CardView(props: CardViewProps) {
@@ -32,6 +36,8 @@ export default function CardView(props: CardViewProps) {
         <View
             style={{
                 ...styles.cardContainer,
+                width: CardDimensions.width,
+                height: CardDimensions.height,
                 borderColor: props.number < 0 ? "#00000066" : "#ffffff66",
                 backgroundColor: background,
             }}
@@ -147,8 +153,6 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: 240,
-        height: 340,
         borderWidth: 10,
         borderRadius: 20,
     },
