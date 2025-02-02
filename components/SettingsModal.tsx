@@ -16,8 +16,8 @@ export default function SettingsModal(props: SettingsModalProps) {
     const { getItem, setItem } = useAsyncStorage("suspensefulDrops");
     const readSuspensefulDropsFromStorage = async () => {
         const item = await getItem();
-        // Default to on
-        setSuspensefulDrops(item === "true" || item === null);
+        // default to off (this will also be false if the value is null / unset)
+        setSuspensefulDrops(item === "true");
     };
 
     const writeSuspensefulDropsToStorage = async (newValue: boolean) => {

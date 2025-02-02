@@ -188,13 +188,14 @@ export default function Index() {
             (a, b) => Math.abs(a.number) - Math.abs(b.number),
         );
 
-        const suspensefulDrops = await AsyncStorage.getItem("suspensefulDrops");
+        // default to off (this will also be false if the value is null / unset)
+        const suspensefulDrops =
+            (await AsyncStorage.getItem("suspensefulDrops")) === "true";
 
         setupAndShowNumberDisplayState({
             numbersToShow: sortedNumbers,
             showNumberDisplayTitle: "Your new numbers",
-            buildSuspense:
-                suspensefulDrops === "true" || suspensefulDrops === null, // default to on
+            buildSuspense: suspensefulDrops,
         });
     }
 
