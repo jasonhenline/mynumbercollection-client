@@ -2,7 +2,6 @@ import { StyleSheet, TextStyle, View } from "react-native";
 import { Text, Tooltip, useTheme } from "react-native-paper";
 import { getCardColor } from "@/styles/getCardColor";
 import { StyleProp } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheet";
-import { ViewStyle } from "@/node_modules/react-native/Libraries/StyleSheet/StyleSheetTypes";
 import { isPrime, isSquare } from "@/utils/math";
 import { getFlavorText } from "@/utils/flavortext";
 
