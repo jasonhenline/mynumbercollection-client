@@ -12,7 +12,7 @@ export function entryToEmoji(entry: CardEntry) {
         [Rarity.Rare]: "🟣",
         [Rarity.Mythical]: "🟡",
         [Rarity.Legendary]: "🔴",
-        [Rarity.Unique]: "‼️",
+        [Rarity.Unique]: "❗️",
     };
 
     const numberInEmojis = entry.number
