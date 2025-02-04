@@ -1,21 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import {
-    Animated,
-    Easing,
-    StyleSheet,
-    useAnimatedValue,
-    View,
-} from "react-native";
+import { Animated, Easing, StyleSheet, View } from "react-native";
 import CardView, { CardDimensions } from "./CardView";
 import { AntDesign } from "@expo/vector-icons";
 import { Button, Text, TouchableRipple, useTheme } from "react-native-paper";
 import { CardEntry } from "@/app";
+import CopyNumbers from "./CopyNumbers";
 
 type NumberCarouselViewProps = {
     numbersToDisplay: CardEntry[];
     carouselTitle: string;
     buildSuspense: boolean;
     startingIndex?: number;
+    showCopyIcon?: boolean;
     onBackToGrid: (currentNumber: number) => void;
 };
 
@@ -191,14 +187,23 @@ export default function NumberCarouselView(props: NumberCarouselViewProps) {
                     {cardIndex + 1}/{props.numbersToDisplay.length}
                 </Text>
             )}
-            <Button
-                mode="outlined"
-                onPress={() =>
-                    props.onBackToGrid(props.numbersToDisplay[cardIndex].number)
-                }
-            >
-                Back to Grid
-            </Button>
+            <View style={styles.buttonFooter}>
+                <Button
+                    mode="outlined"
+                    onPress={() =>
+                        props.onBackToGrid(
+                            props.numbersToDisplay[cardIndex].number,
+                        )
+                    }
+                >
+                    Back to Grid
+                </Button>
+                {props.showCopyIcon ? (
+                    <CopyNumbers
+                        numbersToCopy={props.numbersToDisplay}
+                    ></CopyNumbers>
+                ) : undefined}
+            </View>
         </View>
     );
 }
@@ -207,5 +212,9 @@ const styles = StyleSheet.create({
     card: {
         position: "absolute",
         left: 36,
+    },
+    buttonFooter: {
+        flexDirection: "row",
+        alignItems: "center",
     },
 });
