@@ -70,14 +70,23 @@ export default function NumberCarouselView(props: NumberCarouselViewProps) {
     // sentinel dependency
     const [cyclingTrigger, setCyclingTrigger] = useState({});
 
-    function cycleNumberAfterDelay() {
+    // The visuals work out better if the shuffle duration is not a multiple of the cycle duration
+    const shuffleDuration = 2000;
+    const cycleDuration = 150;
+    const numberOfShuffles = Math.ceil(shuffleDuration / cycleDuration);
+
+    function cycleNumberAfterDelay(cycleCount: number, targetNumber: number) {
+        const numberToShow = Math.floor(
+            (targetNumber / numberOfShuffles) * cycleCount,
+        );
+
         setOverrideNumber({
-            number: Math.floor(Math.random() * 1000),
+            number: numberToShow,
             isNew: false,
         });
         nextCycleTimeout.current = setTimeout(() => {
-            cycleNumberAfterDelay();
-        }, 100);
+            cycleNumberAfterDelay(cycleCount + 1, targetNumber);
+        }, cycleDuration);
     }
 
     function stopNumberCycling() {
@@ -88,7 +97,7 @@ export default function NumberCarouselView(props: NumberCarouselViewProps) {
     const initialScale = Animated.timing(scale.current, {
         toValue: 0.9,
         easing: Easing.linear,
-        duration: 1750,
+        duration: shuffleDuration,
         delay: 150,
         useNativeDriver: true,
     });
@@ -112,7 +121,7 @@ export default function NumberCarouselView(props: NumberCarouselViewProps) {
             return;
         }
         scale.current.setValue(0.75);
-        cycleNumberAfterDelay();
+        cycleNumberAfterDelay(0, getCurrent().number);
         initialScale.start((result) => {
             if (!result.finished) {
                 return;
