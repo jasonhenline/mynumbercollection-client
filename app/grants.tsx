@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { useData } from "@/DataContext";
-import { Grant } from "@/model/Grant";
+import { getGrantString, Grant } from "@/model/Grant";
 import { ActivityIndicator, DataTable, Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import CopyNumbers from "@/components/CopyNumbers";
@@ -15,17 +15,6 @@ export default function Grants() {
                 <ActivityIndicator size="large" style={{ paddingTop: 32 }} />
             </View>
         );
-    }
-
-    function getGrantString(grant: Grant) {
-        const numbers: number[] = [];
-        for (const [number, count] of grant.numberToCountMap) {
-            for (let i = 0; i < count; i++) {
-                numbers.push(number);
-            }
-        }
-        numbers.sort((a, b) => a - b);
-        return numbers.join(", ");
     }
 
     function convertGrantToCardEntries(grant: Grant) {
