@@ -99,6 +99,13 @@ export default function RootLayout() {
                                             title: "Packs",
                                         }}
                                     />
+                                    <Drawer.Screen
+                                        name="stats"
+                                        options={{
+                                            drawerLabel: "Stats",
+                                            title: "Stats",
+                                        }}
+                                    />
                                 </Drawer>
                             </GestureHandlerRootView>
                         </DataProvider>
