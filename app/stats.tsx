@@ -339,7 +339,9 @@ export default function Stats() {
                         if (currentSequence.length > longestSequence.length) {
                             longestSequence = currentSequence;
                         }
-                        currentSequence = [];
+                        // Reset the sequence to start with the number that broke the current
+                        // sequence
+                        currentSequence = [next];
                     }
                 }
                 return {
