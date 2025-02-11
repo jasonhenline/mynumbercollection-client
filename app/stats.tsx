@@ -61,7 +61,7 @@ export default function Stats() {
     /** A sorted flat-list of every number that has been pulled at least once */
     const sortedFlatPulls = [
         ...new Set(timeBoundNumberToCountMap().keys()),
-    ].sort(sortByValue);
+    ].sort(sortByValueAscending);
 
     const hasNegatives = sortedFlatPulls[0] < 0;
 
@@ -117,9 +117,12 @@ export default function Stats() {
         );
     }
 
-    /** Reusable method to sort numbers by their value */
-    function sortByValue(a: number, b: number): number {
+    function sortByValueAscending(a: number, b: number): number {
         return a < b ? -1 : 1;
+    }
+
+    function sortByValueDescending(a: number, b: number): number {
+        return a > b ? -1 : 1;
     }
 
     /** @returns the total absolute sum of numbers pulled in a given grant */
@@ -277,22 +280,23 @@ export default function Stats() {
         {
             title: "Most duplicates in a single pack",
             calc: () => {
-                let mostDuplicatedNumbers: number[] = [];
+                let mostDuplicatedNumbers: Set<number> = new Set();
                 let mostDuplicateCount = 0;
                 for (const grant of getTimeBoundGrants()) {
                     for (const [num, count] of grant.numberToCountMap) {
                         if (count == mostDuplicateCount) {
-                            mostDuplicatedNumbers.push(num);
+                            mostDuplicatedNumbers.add(num);
                         } else if (count > mostDuplicateCount) {
-                            mostDuplicatedNumbers = [num];
+                            mostDuplicatedNumbers.clear();
+                            mostDuplicatedNumbers.add(num);
                             mostDuplicateCount = count;
                         }
                     }
                 }
                 return {
                     output: [mostDuplicateCount],
-                    additionalText: `${mostDuplicateCount} duplicates of ${numberString(
-                        mostDuplicatedNumbers,
+                    additionalText: `${mostDuplicateCount} duplicates each of ${numberString(
+                        [...mostDuplicatedNumbers].sort(sortByValueDescending),
                     )}`,
                 };
             },
@@ -486,7 +490,7 @@ export default function Stats() {
                 for (const grant of getTimeBoundGrants()) {
                     const numbersInGrant = [
                         ...grant.numberToCountMap.keys(),
-                    ].sort(sortByValue);
+                    ].sort(sortByValueAscending);
                     const smallest = numbersInGrant[0];
                     const largest = numbersInGrant[numbersInGrant.length - 1];
 
@@ -512,7 +516,7 @@ export default function Stats() {
                 for (const grant of getTimeBoundGrants()) {
                     const numbersInGrant = [
                         ...grant.numberToCountMap.keys(),
-                    ].sort(sortByValue);
+                    ].sort(sortByValueAscending);
                     const smallest = numbersInGrant[0];
                     const largest = numbersInGrant[numbersInGrant.length - 1];
 
