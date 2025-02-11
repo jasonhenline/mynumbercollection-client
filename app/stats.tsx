@@ -17,7 +17,14 @@ interface StatResult {
 
 interface StatEntry {
     title: string;
+    isAbsolute?: boolean;
+    requiresNegatives?: boolean;
     calc: () => StatResult;
+}
+
+interface StatBlock {
+    title: string;
+    stats: StatEntry[];
 }
 
 export default function Stats() {
@@ -59,7 +66,9 @@ export default function Stats() {
     /** A sorted flat-list of every number that has been pulled at least once */
     const sortedFlatPulls = [
         ...new Set(timeBoundNumberToCountMap().keys()),
-    ].sort(sortByValue);
+    ].sort(sortByValueAscending);
+
+    const hasNegatives = sortedFlatPulls[0] < 0;
 
     if (isLoading) {
         return (
@@ -78,13 +87,27 @@ export default function Stats() {
     }
 
     /** @returns a single stat-line view for the given statFunc */
-    function makeStatLine(entry: StatEntry, index: number) {
-        const result = entry.calc();
+    function makeStatLine(
+        {
+            title,
+            calc,
+            isAbsolute = false,
+            requiresNegatives = false,
+        }: StatEntry,
+        index: number,
+    ) {
+        if (requiresNegatives && !hasNegatives) {
+            return;
+        }
+
+        const result: StatResult = calc();
 
         return (
             <View key={index} style={styles.statLine}>
                 <View style={styles.singleStatEntry}>
-                    <Text style={{ flexBasis: 300 }}>{entry.title}</Text>
+                    <Text style={{ flexBasis: 300 }}>{`${title}${
+                        isAbsolute && hasNegatives ? " (absolute)" : ""
+                    }`}</Text>
                     <Text style={{ flexBasis: 150 }}>
                         {result.output.length > 0
                             ? numberString(result.output)
@@ -99,9 +122,21 @@ export default function Stats() {
         );
     }
 
-    /** Reusable method to sort numbers by their value */
-    function sortByValue(a: number, b: number): number {
+    function makeStatBlock(block: StatBlock, index: number) {
+        return (
+            <View style={styles.statBlock} key={index}>
+                <Text variant="titleLarge">{block.title}</Text>
+                {block.stats.map((stat, index) => makeStatLine(stat, index))}
+            </View>
+        );
+    }
+
+    function sortByValueAscending(a: number, b: number): number {
         return a < b ? -1 : 1;
+    }
+
+    function sortByValueDescending(a: number, b: number): number {
+        return a > b ? -1 : 1;
     }
 
     /** @returns the total absolute sum of numbers pulled in a given grant */
@@ -113,13 +148,8 @@ export default function Stats() {
         return total;
     }
 
-    /**
-     * This mega-list contains all the stats we care about on this page. The methods in this list
-     * should interact with the "time bound" lists for grants and numbers, not the raw ones we get
-     * from useData.
-     */
-    const stats: StatEntry[] = [
-        /** Simple stats */
+    // ------ STATS ------ //
+    const records = [
         {
             title: "Largest number",
             calc: () => {
@@ -136,6 +166,7 @@ export default function Stats() {
         },
         {
             title: "Smallest number",
+            requiresNegatives: true,
             calc: () => {
                 const smallest = sortedFlatPulls[0];
 
@@ -157,27 +188,35 @@ export default function Stats() {
                 };
             },
         },
+
         {
-            title: "Total number of pulls",
-            calc: () => ({
-                output: [getTimeBoundGrants().length],
-            }),
-        },
-        {
-            title: "Total of all numbers pulled (absolute)",
+            title: "Days passed since highest pull",
             calc: () => {
-                return {
-                    output: [
-                        getTimeBoundGrants().reduce(
-                            (acc, curr) => acc + absoluteSumForGrant(curr),
-                            0,
+                const grantWithHighestPull = getTimeBoundGrants().find(
+                    (grant) =>
+                        [...grant.numberToCountMap.keys()].includes(
+                            sortedFlatPulls[sortedFlatPulls.length - 1],
                         ),
-                    ],
+                );
+
+                if (!grantWithHighestPull) {
+                    return { output: [] };
+                }
+
+                const timeSince =
+                    Date.now() - grantWithHighestPull.timestamp.getTime();
+
+                const daysSince = Math.floor(timeSince / 1000 / 3600 / 24);
+
+                return {
+                    output: [daysSince],
+                    additionalText: `${grantWithHighestPull.timestamp.toDateString()}`,
                 };
             },
         },
         {
-            title: "Highest total in one pull (absolute)",
+            title: "Highest total in one pull",
+            isAbsolute: true,
             calc: () => {
                 let largestGrant: Grant = getTimeBoundGrants()[0];
 
@@ -194,7 +233,8 @@ export default function Stats() {
             },
         },
         {
-            title: "Lowest total in one pull (absolute)",
+            title: "Lowest total in one pull",
+            isAbsolute: true,
             calc: () => {
                 let smallestGrant: Grant = getTimeBoundGrants()[0];
 
@@ -210,6 +250,9 @@ export default function Stats() {
                 };
             },
         },
+    ];
+
+    const duplicatesAndCopies = [
         {
             title: "Most frequently pulled number",
             calc: () => {
@@ -228,12 +271,6 @@ export default function Stats() {
                     additionalText: `Pulled ${mostFrequentCount} times`,
                 };
             },
-        },
-        {
-            title: "Total unique numbers pulled",
-            calc: () => ({
-                output: [[...timeBoundNumberToCountMap().keys()].length],
-            }),
         },
         {
             title: "Largest duplicate number",
@@ -255,28 +292,30 @@ export default function Stats() {
         {
             title: "Most duplicates in a single pack",
             calc: () => {
-                let mostDuplicatedNumbers: number[] = [];
+                let mostDuplicatedNumbers: Set<number> = new Set();
                 let mostDuplicateCount = 0;
                 for (const grant of getTimeBoundGrants()) {
                     for (const [num, count] of grant.numberToCountMap) {
                         if (count == mostDuplicateCount) {
-                            mostDuplicatedNumbers.push(num);
+                            mostDuplicatedNumbers.add(num);
                         } else if (count > mostDuplicateCount) {
-                            mostDuplicatedNumbers = [num];
+                            mostDuplicatedNumbers.clear();
+                            mostDuplicatedNumbers.add(num);
                             mostDuplicateCount = count;
                         }
                     }
                 }
                 return {
                     output: [mostDuplicateCount],
-                    additionalText: `${mostDuplicateCount} duplicates of ${numberString(
-                        mostDuplicatedNumbers,
+                    additionalText: `${mostDuplicateCount} duplicates each of ${numberString(
+                        [...mostDuplicatedNumbers].sort(sortByValueDescending),
                     )}`,
                 };
             },
         },
         {
             title: "Largest total symmetric pair",
+            requiresNegatives: true,
             calc: () => {
                 /**
                  * Recursively "narrow down" on the largest symmetric pair someone has. This method
@@ -323,6 +362,34 @@ export default function Stats() {
                 return narrowDown(Math.min(...sortedFlatPulls));
             },
         },
+    ];
+    const pullingAndHowYouPull = [
+        {
+            title: "Total number of pulls",
+            calc: () => ({
+                output: [getTimeBoundGrants().length],
+            }),
+        },
+        {
+            title: "Total of all numbers pulled",
+            isAbsolute: true,
+            calc: () => {
+                return {
+                    output: [
+                        getTimeBoundGrants().reduce(
+                            (acc, curr) => acc + absoluteSumForGrant(curr),
+                            0,
+                        ),
+                    ],
+                };
+            },
+        },
+        {
+            title: "Total unique numbers pulled",
+            calc: () => ({
+                output: [[...timeBoundNumberToCountMap().keys()].length],
+            }),
+        },
         {
             title: "Longest total sequence",
             calc: () => {
@@ -339,7 +406,9 @@ export default function Stats() {
                         if (currentSequence.length > longestSequence.length) {
                             longestSequence = currentSequence;
                         }
-                        currentSequence = [];
+                        // Reset the sequence to start with the number that broke the current
+                        // sequence
+                        currentSequence = [next];
                     }
                 }
                 return {
@@ -350,6 +419,60 @@ export default function Stats() {
                 };
             },
         },
+        {
+            title: "Narrowest spread in a single pack",
+            calc: () => {
+                let narrowestGrant = getTimeBoundGrants()[0];
+                let narrowestDiff = Number.MAX_SAFE_INTEGER;
+
+                for (const grant of getTimeBoundGrants()) {
+                    const numbersInGrant = [
+                        ...grant.numberToCountMap.keys(),
+                    ].sort(sortByValueAscending);
+                    const smallest = numbersInGrant[0];
+                    const largest = numbersInGrant[numbersInGrant.length - 1];
+
+                    const difference = largest - smallest;
+                    if (difference < narrowestDiff) {
+                        narrowestDiff = difference;
+                        narrowestGrant = grant;
+                    }
+                }
+
+                return {
+                    output: [narrowestDiff],
+                    additionalText: getGrantString(narrowestGrant),
+                };
+            },
+        },
+        {
+            title: "Widest spread in a single pack",
+            calc: () => {
+                let widestGrant = getTimeBoundGrants()[0];
+                let widestDiff = 0;
+
+                for (const grant of getTimeBoundGrants()) {
+                    const numbersInGrant = [
+                        ...grant.numberToCountMap.keys(),
+                    ].sort(sortByValueAscending);
+                    const smallest = numbersInGrant[0];
+                    const largest = numbersInGrant[numbersInGrant.length - 1];
+
+                    const difference = largest - smallest;
+                    if (difference > widestDiff) {
+                        widestDiff = difference;
+                        widestGrant = grant;
+                    }
+                }
+
+                return {
+                    output: [widestDiff],
+                    additionalText: getGrantString(widestGrant),
+                };
+            },
+        },
+    ];
+    const dimensions = [
         {
             title: "Completed rows of numbers",
             calc: () => {
@@ -395,7 +518,7 @@ export default function Stats() {
                 ) {
                     for (let i = 0; i < 10; i++) {
                         if (
-                            neededForFullColumn(columnStart - i).every((x) =>
+                            neededForFullColumn(columnStart + i).every((x) =>
                                 sortedFlatPulls.includes(x),
                             )
                         ) {
@@ -408,31 +531,8 @@ export default function Stats() {
                 return { output: [columnsCompleted] };
             },
         },
-        {
-            title: "Days passed since highest pull",
-            calc: () => {
-                const grantWithHighestPull = getTimeBoundGrants().find(
-                    (grant) =>
-                        [...grant.numberToCountMap.keys()].includes(
-                            sortedFlatPulls[sortedFlatPulls.length - 1],
-                        ),
-                );
-
-                if (!grantWithHighestPull) {
-                    return { output: [] };
-                }
-
-                const timeSince =
-                    Date.now() - grantWithHighestPull.timestamp.getTime();
-
-                const daysSince = Math.floor(timeSince / 1000 / 3600 / 24);
-
-                return {
-                    output: [daysSince],
-                    additionalText: `${grantWithHighestPull.timestamp.toDateString()}`,
-                };
-            },
-        },
+    ];
+    const moreStats = [
         {
             title: "Most value from duplicates of a single number",
             calc: () => {
@@ -452,64 +552,30 @@ export default function Stats() {
                 };
             },
         },
+    ];
+    /**
+     * This mega-list contains all the stats we care about on this page. The methods in this list
+     * should interact with the "time bound" lists for grants and numbers, not the raw ones we get
+     * from useData.
+     */
+    const stats: StatBlock[] = [
         {
-            title: "Narrowest spread in a single pack",
-            calc: () => {
-                let narrowestGrant = getTimeBoundGrants()[0];
-                let narrowestDiff = Number.MAX_SAFE_INTEGER;
-
-                for (const grant of getTimeBoundGrants()) {
-                    const numbersInGrant = [
-                        ...grant.numberToCountMap.keys(),
-                    ].sort(sortByValue);
-                    const smallest = numbersInGrant[0];
-                    const largest = numbersInGrant[numbersInGrant.length - 1];
-
-                    const difference = largest - smallest;
-                    if (difference < narrowestDiff) {
-                        narrowestDiff = difference;
-                        narrowestGrant = grant;
-                    }
-                }
-
-                return {
-                    output: [narrowestDiff],
-                    additionalText: getGrantString(narrowestGrant),
-                };
-            },
+            title: "Records",
+            stats: records,
         },
+        { title: "Duplicates and copies", stats: duplicatesAndCopies },
         {
-            title: "Widest spread in a single pack",
-            calc: () => {
-                let widestGrant = getTimeBoundGrants()[0];
-                let widestDiff = 0;
-
-                for (const grant of getTimeBoundGrants()) {
-                    const numbersInGrant = [
-                        ...grant.numberToCountMap.keys(),
-                    ].sort(sortByValue);
-                    const smallest = numbersInGrant[0];
-                    const largest = numbersInGrant[numbersInGrant.length - 1];
-
-                    const difference = largest - smallest;
-                    if (difference > widestDiff) {
-                        widestDiff = difference;
-                        widestGrant = grant;
-                    }
-                }
-
-                return {
-                    output: [widestDiff],
-                    additionalText: getGrantString(widestGrant),
-                };
-            },
+            title: "Pulling and how you pull",
+            stats: pullingAndHowYouPull,
         },
+        { title: "Dimensions", stats: dimensions },
+        { title: "More stats", stats: moreStats },
     ];
 
     return (
         <View style={{ maxHeight: "100%" }}>
             <SegmentedButtons
-                style={{ padding: 16 }}
+                style={{ padding: 16, maxWidth: 600 }}
                 value={daysToConsider}
                 onValueChange={setDaysToConsider}
                 buttons={[
@@ -523,7 +589,7 @@ export default function Stats() {
             />
             <ScrollView>
                 <View style={styles.container}>
-                    {stats.map((item, index) => makeStatLine(item, index))}
+                    {stats.map((block, index) => makeStatBlock(block, index))}
                 </View>
             </ScrollView>
         </View>
@@ -539,6 +605,10 @@ const styles = StyleSheet.create({
     },
     statLine: {
         gap: 8,
+    },
+    statBlock: {
+        gap: 16,
+        marginBottom: 8,
     },
     singleStatEntry: {
         flexDirection: "row",
