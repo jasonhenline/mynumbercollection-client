@@ -17,6 +17,8 @@ interface StatResult {
 
 interface StatEntry {
     title: string;
+    isAbsolute?: boolean;
+    requiresNegatives?: boolean;
     calc: () => StatResult;
 }
 
@@ -61,6 +63,8 @@ export default function Stats() {
         ...new Set(timeBoundNumberToCountMap().keys()),
     ].sort(sortByValue);
 
+    const hasNegatives = sortedFlatPulls[0] < 0;
+
     if (isLoading) {
         return (
             <View>
@@ -78,13 +82,27 @@ export default function Stats() {
     }
 
     /** @returns a single stat-line view for the given statFunc */
-    function makeStatLine(entry: StatEntry, index: number) {
-        const result = entry.calc();
+    function makeStatLine(
+        {
+            title,
+            calc,
+            isAbsolute = false,
+            requiresNegatives = false,
+        }: StatEntry,
+        index: number,
+    ) {
+        if (requiresNegatives && !hasNegatives) {
+            return;
+        }
+
+        const result: StatResult = calc();
 
         return (
             <View key={index} style={styles.statLine}>
                 <View style={styles.singleStatEntry}>
-                    <Text style={{ flexBasis: 300 }}>{entry.title}</Text>
+                    <Text style={{ flexBasis: 300 }}>{`${title}${
+                        isAbsolute && hasNegatives ? " (absolute)" : ""
+                    }`}</Text>
                     <Text style={{ flexBasis: 150 }}>
                         {result.output.length > 0
                             ? numberString(result.output)
@@ -136,6 +154,7 @@ export default function Stats() {
         },
         {
             title: "Smallest number",
+            requiresNegatives: true,
             calc: () => {
                 const smallest = sortedFlatPulls[0];
 
@@ -164,7 +183,8 @@ export default function Stats() {
             }),
         },
         {
-            title: "Total of all numbers pulled (absolute)",
+            title: "Total of all numbers pulled",
+            isAbsolute: true,
             calc: () => {
                 return {
                     output: [
@@ -177,7 +197,8 @@ export default function Stats() {
             },
         },
         {
-            title: "Highest total in one pull (absolute)",
+            title: "Highest total in one pull",
+            isAbsolute: true,
             calc: () => {
                 let largestGrant: Grant = getTimeBoundGrants()[0];
 
@@ -194,7 +215,8 @@ export default function Stats() {
             },
         },
         {
-            title: "Lowest total in one pull (absolute)",
+            title: "Lowest total in one pull",
+            isAbsolute: true,
             calc: () => {
                 let smallestGrant: Grant = getTimeBoundGrants()[0];
 
@@ -277,6 +299,7 @@ export default function Stats() {
         },
         {
             title: "Largest total symmetric pair",
+            requiresNegatives: true,
             calc: () => {
                 /**
                  * Recursively "narrow down" on the largest symmetric pair someone has. This method
