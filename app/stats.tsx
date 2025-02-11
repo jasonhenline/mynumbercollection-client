@@ -575,7 +575,7 @@ export default function Stats() {
     return (
         <View style={{ maxHeight: "100%" }}>
             <SegmentedButtons
-                style={{ padding: 16 }}
+                style={{ padding: 16, maxWidth: 600 }}
                 value={daysToConsider}
                 onValueChange={setDaysToConsider}
                 buttons={[
