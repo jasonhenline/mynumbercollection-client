@@ -395,7 +395,7 @@ export default function Stats() {
                 ) {
                     for (let i = 0; i < 10; i++) {
                         if (
-                            neededForFullColumn(columnStart - i).every((x) =>
+                            neededForFullColumn(columnStart + i).every((x) =>
                                 sortedFlatPulls.includes(x),
                             )
                         ) {
