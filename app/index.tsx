@@ -10,7 +10,6 @@ import createApiClient from "@/clients/apiClient";
 import {
     ActivityIndicator,
     Button,
-    Modal,
     ThemeProvider as PaperThemeOnlyProvider,
     Text,
 } from "react-native-paper";
