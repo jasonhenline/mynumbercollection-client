@@ -2,7 +2,8 @@ import GridCarouselView from "@/components/GridCarouselView";
 import { Text, Button, ActivityIndicator } from "react-native-paper";
 import { Linking, StyleSheet, View } from "react-native";
 import { useData } from "@/DataContext";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigation } from "expo-router";
 
 export default function Conway() {
     const { numberToCountMap, isLoading } = useData();
@@ -37,7 +38,21 @@ export default function Conway() {
     }
 
     function start(flipped: boolean = false) {
-        updateGrid(numberToCountMap);
+        const startingGrid = new Map(numberToCountMap);
+
+        if (flipped) {
+            // Make sure we are including the necessary "flips" up to the end of the page
+            const min = Math.min(...startingGrid.keys()) - 100;
+            const max = Math.max(...startingGrid.keys()) + 100;
+            for (let i = min; i <= max; i++) {
+                if (startingGrid.has(i)) {
+                    startingGrid.delete(i);
+                } else {
+                    startingGrid.set(i, 1);
+                }
+            }
+        }
+        updateGrid(startingGrid);
         setRunning(true);
         timeout.current = setInterval(updateBoardState, 750);
     }
@@ -197,7 +212,7 @@ export default function Conway() {
                 disableNav={running}
             />
             {running ? (
-                <Button mode="contained" onPress={reset}>
+                <Button mode="contained-tonal" onPress={reset}>
                     Stop
                 </Button>
             ) : (
