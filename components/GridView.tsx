@@ -6,6 +6,7 @@ type GridViewProps = {
     startNumber: number;
     /** Only invoked if the card pressed is one that has been pulled */
     pressedCardInGrid: (card: number) => void;
+    hideNumbers?: boolean;
 };
 
 export default function GridView(props: GridViewProps) {
@@ -36,17 +37,21 @@ export default function GridView(props: GridViewProps) {
                         backgroundColor,
                     }}
                 >
-                    <Text
-                        style={{
-                            color,
-                            fontWeight: "bold",
-                            cursor: numberSet.has(number)
-                                ? undefined
-                                : "default",
-                        }}
-                    >
-                        {number}
-                    </Text>
+                    {props.hideNumbers ? (
+                        <View></View>
+                    ) : (
+                        <Text
+                            style={{
+                                color,
+                                fontWeight: "bold",
+                                cursor: numberSet.has(number)
+                                    ? undefined
+                                    : "default",
+                            }}
+                        >
+                            {number}
+                        </Text>
+                    )}
                 </View>
             );
 
