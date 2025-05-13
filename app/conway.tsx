@@ -1,12 +1,13 @@
 import GridCarouselView from "@/components/GridCarouselView";
-import { Text, Button, ActivityIndicator } from "react-native-paper";
-import { Linking, StyleSheet, View } from "react-native";
+import { Text, Button, ActivityIndicator, useTheme } from "react-native-paper";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { useData } from "@/DataContext";
-import { useEffect, useRef, useState } from "react";
-import { useNavigation } from "expo-router";
+import { useRef, useState } from "react";
+import Slider from "@react-native-community/slider";
 
 export default function Conway() {
     const { numberToCountMap, isLoading } = useData();
+    const theme = useTheme();
 
     const currentGridState = useRef<Map<number, number>>(numberToCountMap);
     const [renderedGridState, setRenderedGridState] =
@@ -14,6 +15,13 @@ export default function Conway() {
     const [currentPage, setCurrentPage] = useState(0);
     const [running, setRunning] = useState(false);
     const timeout = useRef<number | NodeJS.Timeout | undefined>(undefined);
+
+    const [iterations, setIterations] = useState(0);
+    const [aliveCells, setAliveCells] = useState(0);
+    const [deadCells, setDeadCells] = useState(0);
+
+    // In seconds
+    const [intervalDuration, setIntervalDuration] = useState(0.5);
 
     if (isLoading) {
         return (
@@ -53,8 +61,22 @@ export default function Conway() {
             }
         }
         updateGrid(startingGrid);
+
+        // Initialize the alive cell count
+        const simStart = currentPage * 100;
+        const simEnd = simStart + 99;
+
+        const activeTiles = [...currentGridState.current.keys()].filter(
+            (key) => key <= simEnd && key >= simStart,
+        );
+        setAliveCells(activeTiles.length);
+
         setRunning(true);
-        timeout.current = setInterval(updateBoardState, 750);
+        timeout.current = setInterval(
+            updateBoardState,
+            // Convert to milliseconds
+            intervalDuration * 1000,
+        );
     }
 
     function updateBoardState() {
@@ -62,8 +84,21 @@ export default function Conway() {
 
         const newGrid = applyConwayGameRules(startingGrid);
 
+        // 2D boolean grid equality check to short circuit if the state is identical
+        // between any two iterations
+        if (
+            newGrid.every((row, rowIdx) =>
+                row.every(
+                    (col, colIdx) => col === startingGrid[rowIdx][colIdx],
+                ),
+            )
+        ) {
+            return;
+        }
+
         const numberMap = makeNumberMapFromBoolGrid(newGrid);
         updateGrid(numberMap);
+        setIterations((iterations) => iterations + 1);
     }
 
     function applyConwayGameRules(startingGrid: boolean[][]): boolean[][] {
@@ -71,6 +106,7 @@ export default function Conway() {
             .fill(false)
             .map(() => new Array(10).fill(false));
 
+        let liveCells = 0;
         for (const [rowIdx, row] of startingGrid.entries()) {
             for (const [colIdx, col] of row.entries()) {
                 const neighbors = countOfLiveNeighbors(
@@ -82,18 +118,23 @@ export default function Conway() {
                     if (neighbors < 2 || neighbors > 3) {
                         // Live cell dies with <2 neighbors or >3 neighbors
                         newGrid[rowIdx][colIdx] = false;
+                        setDeadCells((prev) => prev + 1);
                     } else {
                         // Live cell survives with two or 3 neighbors
                         newGrid[rowIdx][colIdx] = true;
+                        liveCells += 1;
                     }
                 } else {
                     if (neighbors == 3) {
                         // Dead cell revives with exactly three neighbors
                         newGrid[rowIdx][colIdx] = true;
+                        liveCells += 1;
                     }
                 }
             }
         }
+
+        setAliveCells(liveCells);
 
         return newGrid;
     }
@@ -184,6 +225,9 @@ export default function Conway() {
         clearInterval(timeout.current);
         timeout.current = undefined;
         setRunning(false);
+        setIterations(0);
+        setAliveCells(0);
+        setDeadCells(0);
         updateGrid(numberToCountMap);
     }
 
@@ -193,39 +237,64 @@ export default function Conway() {
         );
     }
 
+    function statString(): string {
+        return `Iterations: ${iterations} | Live cells: ${aliveCells} | Deceased cells: ${deadCells}`;
+    }
+
     return (
-        <View style={styles.container}>
-            <Text variant="headlineSmall">Conway's Game of Life</Text>
-            <Text
-                style={styles.linkLike}
-                variant="bodySmall"
-                onPress={openConwaysWiki}
-            >
-                Wikipedia
-            </Text>
-            <GridCarouselView
-                numberToCount={running ? renderedGridState : numberToCountMap}
-                startingPageNumber={currentPage}
-                pressedCardInGrid={() => {}}
-                navigatedToPage={navigatedToPage}
-                hideNumbers={running}
-                disableNav={running}
-            />
-            {running ? (
-                <Button mode="contained-tonal" onPress={reset}>
-                    Stop
-                </Button>
-            ) : (
-                <View style={styles.buttonCluster}>
-                    <Button mode="contained" onPress={() => start()}>
-                        Start
+        <ScrollView>
+            <View style={styles.container}>
+                <Text variant="headlineSmall">Conway's Game of Life</Text>
+                <Text
+                    style={styles.linkLike}
+                    variant="bodySmall"
+                    onPress={openConwaysWiki}
+                >
+                    Wikipedia
+                </Text>
+                <GridCarouselView
+                    numberToCount={
+                        running ? renderedGridState : numberToCountMap
+                    }
+                    startingPageNumber={currentPage}
+                    pressedCardInGrid={() => {}}
+                    navigatedToPage={navigatedToPage}
+                    hideNumbers={running}
+                    disableNav={running}
+                />
+                {running && <Text>{statString()}</Text>}
+                {!running && (
+                    <View style={styles.sliderContainer}>
+                        <Text>{`Tick interval: ${intervalDuration}s`}</Text>
+                        <Slider
+                            style={styles.slider}
+                            minimumValue={0.1}
+                            maximumValue={1}
+                            step={0.1}
+                            value={intervalDuration}
+                            onValueChange={setIntervalDuration}
+                            minimumTrackTintColor={theme.colors.primary}
+                            maximumTrackTintColor={theme.colors.onSurface}
+                            thumbTintColor={theme.colors.primary}
+                        ></Slider>
+                    </View>
+                )}
+                {running ? (
+                    <Button mode="contained-tonal" onPress={reset}>
+                        Stop
                     </Button>
-                    <Button mode="outlined" onPress={() => start(true)}>
-                        Start (flipped)
-                    </Button>
-                </View>
-            )}
-        </View>
+                ) : (
+                    <View style={styles.buttonCluster}>
+                        <Button mode="contained" onPress={() => start()}>
+                            Start
+                        </Button>
+                        <Button mode="outlined" onPress={() => start(true)}>
+                            Start (flipped)
+                        </Button>
+                    </View>
+                )}
+            </View>
+        </ScrollView>
     );
 }
 
@@ -235,6 +304,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 20,
+        paddingTop: 16,
+        paddingBottom: 16,
     },
     buttonCluster: {
         display: "flex",
@@ -243,5 +314,12 @@ const styles = StyleSheet.create({
     },
     linkLike: {
         textDecorationLine: "underline",
+    },
+    slider: {
+        width: 300,
+    },
+    sliderContainer: {
+        flexDirection: "column",
+        gap: 8,
     },
 });
