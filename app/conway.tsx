@@ -1,6 +1,6 @@
 import GridCarouselView from "@/components/GridCarouselView";
 import { Text, Button, ActivityIndicator, useTheme } from "react-native-paper";
-import { Linking, StyleSheet, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { useData } from "@/DataContext";
 import { useRef, useState } from "react";
 import Slider from "@react-native-community/slider";
@@ -242,55 +242,59 @@ export default function Conway() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text variant="headlineSmall">Conway's Game of Life</Text>
-            <Text
-                style={styles.linkLike}
-                variant="bodySmall"
-                onPress={openConwaysWiki}
-            >
-                Wikipedia
-            </Text>
-            <GridCarouselView
-                numberToCount={running ? renderedGridState : numberToCountMap}
-                startingPageNumber={currentPage}
-                pressedCardInGrid={() => {}}
-                navigatedToPage={navigatedToPage}
-                hideNumbers={running}
-                disableNav={running}
-            />
-            {running && <Text>{statString()}</Text>}
-            {!running && (
-                <View style={styles.sliderContainer}>
-                    <Text>{`Tick interval: ${intervalDuration}s`}</Text>
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={0.1}
-                        maximumValue={1}
-                        step={0.1}
-                        value={intervalDuration}
-                        onValueChange={setIntervalDuration}
-                        minimumTrackTintColor={theme.colors.primary}
-                        maximumTrackTintColor={theme.colors.onSurface}
-                        thumbTintColor={theme.colors.primary}
-                    ></Slider>
-                </View>
-            )}
-            {running ? (
-                <Button mode="contained-tonal" onPress={reset}>
-                    Stop
-                </Button>
-            ) : (
-                <View style={styles.buttonCluster}>
-                    <Button mode="contained" onPress={() => start()}>
-                        Start
+        <ScrollView>
+            <View style={styles.container}>
+                <Text variant="headlineSmall">Conway's Game of Life</Text>
+                <Text
+                    style={styles.linkLike}
+                    variant="bodySmall"
+                    onPress={openConwaysWiki}
+                >
+                    Wikipedia
+                </Text>
+                <GridCarouselView
+                    numberToCount={
+                        running ? renderedGridState : numberToCountMap
+                    }
+                    startingPageNumber={currentPage}
+                    pressedCardInGrid={() => {}}
+                    navigatedToPage={navigatedToPage}
+                    hideNumbers={running}
+                    disableNav={running}
+                />
+                {running && <Text>{statString()}</Text>}
+                {!running && (
+                    <View style={styles.sliderContainer}>
+                        <Text>{`Tick interval: ${intervalDuration}s`}</Text>
+                        <Slider
+                            style={styles.slider}
+                            minimumValue={0.1}
+                            maximumValue={1}
+                            step={0.1}
+                            value={intervalDuration}
+                            onValueChange={setIntervalDuration}
+                            minimumTrackTintColor={theme.colors.primary}
+                            maximumTrackTintColor={theme.colors.onSurface}
+                            thumbTintColor={theme.colors.primary}
+                        ></Slider>
+                    </View>
+                )}
+                {running ? (
+                    <Button mode="contained-tonal" onPress={reset}>
+                        Stop
                     </Button>
-                    <Button mode="outlined" onPress={() => start(true)}>
-                        Start (flipped)
-                    </Button>
-                </View>
-            )}
-        </View>
+                ) : (
+                    <View style={styles.buttonCluster}>
+                        <Button mode="contained" onPress={() => start()}>
+                            Start
+                        </Button>
+                        <Button mode="outlined" onPress={() => start(true)}>
+                            Start (flipped)
+                        </Button>
+                    </View>
+                )}
+            </View>
+        </ScrollView>
     );
 }
 
@@ -300,6 +304,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 20,
+        paddingTop: 16,
+        paddingBottom: 16,
     },
     buttonCluster: {
         display: "flex",
