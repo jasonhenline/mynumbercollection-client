@@ -112,7 +112,10 @@ export function generateSequence(
         case "perfect":
             return generatePerfectUpTo(maxNumber);
         case "abundant":
-            return generateByFilter(maxNumber, (n) => sumOfProperDivisors(n) > n);
+            return generateByFilter(
+                maxNumber,
+                (n) => sumOfProperDivisors(n) > n,
+            );
         case "semiperfect":
             return generateByFilter(maxNumber, isSemiperfect);
         case "weird":
@@ -178,7 +181,11 @@ function generateByFilter(
     for (let i = 1; i <= maxNumber; i++) {
         if (predicate(i)) results.push(i);
     }
-    for (let i = maxNumber + 1; results.length === 0 || i <= maxNumber + 1000; i++) {
+    for (
+        let i = maxNumber + 1;
+        results.length === 0 || i <= maxNumber + 1000;
+        i++
+    ) {
         if (predicate(i)) {
             results.push(i);
             break;

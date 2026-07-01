@@ -30,7 +30,8 @@ export default function Collections() {
     const { numberToCountMap, isLoading } = useData();
     const darkTheme = CustomDarkTheme;
     const backgroundColor = darkTheme.colors.surface;
-    const [selectedType, setSelectedType] = useState<CollectionType>("fibonacci");
+    const [selectedType, setSelectedType] =
+        useState<CollectionType>("fibonacci");
     const [menuVisible, setMenuVisible] = useState(false);
 
     const collectedNumbers = useMemo(
@@ -47,7 +48,8 @@ export default function Collections() {
                 maxInSequence = n;
             }
         }
-        const bound = selectedType === "untouchable" ? maxOverall : maxInSequence;
+        const bound =
+            selectedType === "untouchable" ? maxOverall : maxInSequence;
         return generateSequence(selectedType, Math.max(bound, 1));
     }, [selectedType, collectedNumbers]);
 
