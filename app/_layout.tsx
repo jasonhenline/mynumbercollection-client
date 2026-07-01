@@ -113,6 +113,13 @@ export default function RootLayout() {
                                             title: "Conway",
                                         }}
                                     />
+                                    <Drawer.Screen
+                                        name="collections"
+                                        options={{
+                                            drawerLabel: "Collections",
+                                            title: "Collections",
+                                        }}
+                                    />
                                 </Drawer>
                             </GestureHandlerRootView>
                         </DataProvider>

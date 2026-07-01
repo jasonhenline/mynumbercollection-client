@@ -160,6 +160,7 @@ const numberToFlavorText = new Map<number, string>([
         "Forty and fabulous! A multiple of 2, 4, 5, and 10, it’s a master of division and milestones.",
     ],
     [42, "Don't Panic."],
+    [66, "Commander, the time has come. Execute Order 66."],
     [69, "Nice."],
     [86, "Eighty-six that number chef! Yes chef!"],
     [
